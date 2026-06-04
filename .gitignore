@@ -1,0 +1,4 @@
+.tdharness/
+*.exe
+*.exe~
+.gocache
