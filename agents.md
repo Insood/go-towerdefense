@@ -11,8 +11,10 @@ This repo is for a simple 3D tower defense game built in Go with Raylib.
 ## Harness
 
 - Use `go run ./cmd/harness` to work with the local development harness.
-- The harness stores state in `.tdharness/state.json`.
 - Keep harness changes minimal unless the user asks for more tooling.
+
+## The Game
+- The game code is located in cmd/game
 
 ## Development Rules
 
