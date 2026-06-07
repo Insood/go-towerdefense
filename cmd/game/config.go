@@ -11,10 +11,8 @@ const (
 	groundPlaneY       = float32(0)
 	rayParallelEpsilon = float32(0.0001)
 
-	gridSize    = 20
-	gridSpacing = float32(1)
-	gridWidth   = 10
-	gridLength  = 20
+	gridWidth  = 10
+	gridLength = 20
 
 	baseCubeSize    = float32(1)
 	cameraPanSpeed  = float32(12)

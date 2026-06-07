@@ -2,6 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"runtime"
+	"strings"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/mlange-42/ark/ecs"
@@ -11,6 +15,7 @@ type Game struct {
 	models       map[string]*rl.Model
 	camera       rl.Camera3D
 	cameraSystem *CameraSystem
+	shaders      map[string]rl.Shader
 	systems      []System
 	world        *ecs.World
 	cubeMapper   *ecs.Map2[Position3, Renderable]
@@ -35,10 +40,12 @@ func InitializeGame() *Game {
 		models:       make(map[string]*rl.Model),
 		camera:       camera,
 		cameraSystem: &CameraSystem{},
+		shaders:      make(map[string]rl.Shader),
 		world:        ecs.NewWorld(),
 		cubeSpots:    make(map[gridCell]struct{}),
 	}
 	game.cameraSystem.Initialize(game)
+	game.loadShaders()
 	game.cubeMapper = ecs.NewMap2[Position3, Renderable](game.world)
 	game.loadModels()
 	game.AddSystem(&RenderSystem{})
@@ -49,14 +56,20 @@ func InitializeGame() *Game {
 	return game
 }
 
+func (game *Game) loadShaders() {
+	for name, paths := range shaderAssetPaths() {
+		game.shaders[name] = rl.LoadShader(paths.vertex, paths.fragment)
+	}
+}
+
 func (game *Game) loadModels() {
+	plane := rl.LoadModelFromMesh(rl.GenMeshPlane(1, 1, 1, 1))
+	plane.GetMaterials()[0].Shader = game.shaders["grid"]
+	game.models["plane"] = &plane
+
 	checkered_image := rl.GenImageChecked(2, 2, 1, 1, rl.Red, rl.Green)
 	texture := rl.LoadTextureFromImage(checkered_image)
 	rl.UnloadImage(checkered_image)
-
-	plane := rl.LoadModelFromMesh(rl.GenMeshPlane(1, 1, 1, 1))
-	plane.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = texture
-	game.models["plane"] = &plane
 
 	cube := rl.LoadModelFromMesh(rl.GenMeshCube(1, 1, 1))
 	cube.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = texture
@@ -121,4 +134,65 @@ func (game *Game) TryPlaceCube(x, z int) bool {
 
 	fmt.Printf("cube placed at grid (%d, %d)\n", x, z)
 	return true
+}
+
+func (game *Game) UnloadShaders() {
+	for _, shader := range game.shaders {
+		rl.UnloadShader(shader)
+	}
+}
+
+type shaderFiles struct {
+	vertex   string
+	fragment string
+}
+
+func shaderAssetPaths() map[string]shaderFiles {
+	shaderDir := gameAssetPath("assets", "shaders")
+	entries, err := os.ReadDir(shaderDir)
+	if err != nil {
+		panic(fmt.Errorf("read shader dir %q: %w", shaderDir, err))
+	}
+
+	paths := make(map[string]shaderFiles)
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+
+		ext := strings.ToLower(filepath.Ext(entry.Name()))
+		switch ext {
+		case ".vs", ".vert":
+			stem := strings.TrimSuffix(entry.Name(), filepath.Ext(entry.Name()))
+			current := paths[stem]
+			current.vertex = filepath.Join(shaderDir, entry.Name())
+			paths[stem] = current
+		case ".fs", ".frag":
+			stem := strings.TrimSuffix(entry.Name(), filepath.Ext(entry.Name()))
+			current := paths[stem]
+			current.fragment = filepath.Join(shaderDir, entry.Name())
+			paths[stem] = current
+		}
+	}
+
+	for name, paths := range paths {
+		if paths.vertex == "" || paths.fragment == "" {
+			panic(fmt.Errorf("shader %q is missing a vertex or fragment file", name))
+		}
+	}
+
+	return paths
+}
+
+func gameAssetPath(parts ...string) string {
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		return filepath.Join(parts...)
+	}
+
+	base := filepath.Dir(filename)
+	segments := make([]string, 0, len(parts)+1)
+	segments = append(segments, base)
+	segments = append(segments, parts...)
+	return filepath.Join(segments...)
 }

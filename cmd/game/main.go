@@ -20,6 +20,7 @@ func main() {
 	defer rl.CloseWindow()
 
 	game := InitializeGame()
+	defer game.UnloadShaders()
 
 	for !rl.WindowShouldClose() {
 		game.cameraSystem.Update(game)
@@ -49,8 +50,6 @@ func main() {
 		rl.BeginMode3D(game.camera)
 
 		game.UpdateSystems()
-
-		rl.DrawGrid(gridSize, gridSpacing)
 
 		rl.EndMode3D()
 
