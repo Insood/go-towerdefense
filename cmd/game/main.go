@@ -22,7 +22,7 @@ func main() {
 	game := InitializeGame()
 
 	for !rl.WindowShouldClose() {
-		updateRTSCamera(&game.camera)
+		game.cameraSystem.Update(game)
 
 		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
 			ray := rl.GetScreenToWorldRay(rl.GetMousePosition(), game.camera)
@@ -73,25 +73,4 @@ func intersectRayGroundPlane(ray rl.Ray) (rl.Vector3, bool) {
 		groundPlaneY,
 		ray.Position.Z+ray.Direction.Z*t,
 	), true
-}
-
-func updateRTSCamera(camera *rl.Camera3D) {
-	move := rl.Vector3Zero()
-	step := cameraPanSpeed * rl.GetFrameTime()
-
-	if rl.IsKeyDown(rl.KeyW) {
-		move.X += step
-	}
-	if rl.IsKeyDown(rl.KeyS) {
-		move.X -= step
-	}
-	if rl.IsKeyDown(rl.KeyD) {
-		move.Y += step
-	}
-	if rl.IsKeyDown(rl.KeyA) {
-		move.Y -= step
-	}
-
-	zoom := -rl.GetMouseWheelMove() * cameraZoomSpeed
-	rl.UpdateCameraPro(camera, move, rl.Vector3Zero(), zoom)
 }

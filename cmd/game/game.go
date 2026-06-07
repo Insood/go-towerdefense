@@ -8,12 +8,13 @@ import (
 )
 
 type Game struct {
-	models     map[string]*rl.Model
-	camera     rl.Camera3D
-	systems    []System
-	world      *ecs.World
-	cubeMapper *ecs.Map2[Position3, Renderable]
-	cubeSpots  map[gridCell]struct{}
+	models       map[string]*rl.Model
+	camera       rl.Camera3D
+	cameraSystem *CameraSystem
+	systems      []System
+	world        *ecs.World
+	cubeMapper   *ecs.Map2[Position3, Renderable]
+	cubeSpots    map[gridCell]struct{}
 }
 
 type gridCell struct {
@@ -31,11 +32,13 @@ func InitializeGame() *Game {
 	}
 
 	game := &Game{
-		models:    make(map[string]*rl.Model),
-		camera:    camera,
-		world:     ecs.NewWorld(),
-		cubeSpots: make(map[gridCell]struct{}),
+		models:       make(map[string]*rl.Model),
+		camera:       camera,
+		cameraSystem: &CameraSystem{},
+		world:        ecs.NewWorld(),
+		cubeSpots:    make(map[gridCell]struct{}),
 	}
+	game.cameraSystem.Initialize(game)
 	game.cubeMapper = ecs.NewMap2[Position3, Renderable](game.world)
 	game.loadModels()
 	game.AddSystem(&RenderSystem{})

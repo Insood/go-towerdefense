@@ -19,6 +19,8 @@ const (
 	baseCubeSize    = float32(1)
 	cameraPanSpeed  = float32(12)
 	cameraZoomSpeed = float32(2)
+	cameraMinZoom   = float32(3)
+	cameraMaxZoom   = float32(20)
 )
 
 var (
@@ -27,8 +29,8 @@ var (
 	cameraUp       = rl.NewVector3(0, 1, 0)
 	cameraFOVY     = float32(45)
 
-	baseCubePosition     = rl.Vector3Zero()
-	baseCubeColor        = rl.NewColor(198, 120, 76, 255)
-	selectionMarkerColor = rl.NewColor(90, 160, 255, 255)
-	bgColor              = rl.NewColor(20, 24, 32, 255)
+	baseCubePosition = rl.Vector3Zero()
+	baseCubeColor    = rl.NewColor(198, 120, 76, 255)
+
+	bgColor = rl.LightGray
 )
