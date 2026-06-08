@@ -16,15 +16,9 @@ type Game struct {
 	camera       rl.Camera3D
 	cameraSystem *CameraSystem
 	shaders      map[string]rl.Shader
+	grid         GameGrid
 	systems      []System
 	world        *ecs.World
-	cubeMapper   *ecs.Map2[Position3, Renderable]
-	cubeSpots    map[gridCell]struct{}
-}
-
-type gridCell struct {
-	X int
-	Z int
 }
 
 func InitializeGame() *Game {
@@ -41,12 +35,12 @@ func InitializeGame() *Game {
 		camera:       camera,
 		cameraSystem: &CameraSystem{},
 		shaders:      make(map[string]rl.Shader),
+		grid:         NewGameGrid(gridWidth, gridLength),
 		world:        ecs.NewWorld(),
-		cubeSpots:    make(map[gridCell]struct{}),
 	}
 	game.cameraSystem.Initialize(game)
+	game.grid.Initialize(game.world)
 	game.loadShaders()
-	game.cubeMapper = ecs.NewMap2[Position3, Renderable](game.world)
 	game.loadModels()
 	game.AddSystem(&RenderSystem{})
 	game.InitializeSystems()
@@ -67,9 +61,9 @@ func (game *Game) loadModels() {
 	plane.GetMaterials()[0].Shader = game.shaders["grid"]
 	game.models["plane"] = &plane
 
-	checkered_image := rl.GenImageChecked(2, 2, 1, 1, rl.Red, rl.Green)
-	texture := rl.LoadTextureFromImage(checkered_image)
-	rl.UnloadImage(checkered_image)
+	checkeredImage := rl.GenImageChecked(2, 2, 1, 1, rl.Red, rl.Green)
+	texture := rl.LoadTextureFromImage(checkeredImage)
+	rl.UnloadImage(checkeredImage)
 
 	cube := rl.LoadModelFromMesh(rl.GenMeshCube(1, 1, 1))
 	cube.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = texture
@@ -80,10 +74,10 @@ func (game *Game) placeGroundPlane() {
 	mapper := ecs.NewMap2[Position3, Renderable](game.world)
 
 	plane := game.models["plane"]
-	for x := -float32(gridLength / 2); x < float32(gridLength/2); x++ {
-		for z := -float32(gridWidth / 2); z < float32(gridWidth/2); z++ {
+	for x := 0; x < gridWidth; x++ {
+		for z := 0; z < gridLength; z++ {
 			mapper.NewEntity(
-				&Position3{X: x, Y: 0, Z: z},
+				&Position3{X: float32(x) + 0.5, Y: 0, Z: float32(z) + 0.5},
 				&Renderable{model: plane, scale: 1.0, tint: rl.White},
 			)
 		}
@@ -104,36 +98,6 @@ func (game *Game) UpdateSystems() {
 	for _, system := range game.systems {
 		system.Update(game)
 	}
-}
-
-func (game *Game) TryPlaceCube(x, z int) bool {
-	cell := gridCell{X: x, Z: z}
-	if _, occupied := game.cubeSpots[cell]; occupied {
-		fmt.Printf("cube placement blocked: occupied cell (%d, %d)\n", x, z)
-		return false
-	}
-
-	if x < -gridLength/2 || x >= gridLength/2 || z < -gridWidth/2 || z >= gridWidth/2 {
-		fmt.Printf("cube placement blocked: out of bounds (%d, %d)\n", x, z)
-		return false
-	}
-
-	game.cubeMapper.NewEntity(
-		&Position3{
-			X: float32(x),
-			Y: groundPlaneY + 0.5,
-			Z: float32(z),
-		},
-		&Renderable{
-			model: game.models["cube"],
-			scale: 1.0,
-			tint:  baseCubeColor,
-		},
-	)
-	game.cubeSpots[cell] = struct{}{}
-
-	fmt.Printf("cube placed at grid (%d, %d)\n", x, z)
-	return true
 }
 
 func (game *Game) UnloadShaders() {
@@ -161,14 +125,14 @@ func shaderAssetPaths() map[string]shaderFiles {
 		}
 
 		ext := strings.ToLower(filepath.Ext(entry.Name()))
+		stem := strings.TrimSuffix(entry.Name(), filepath.Ext(entry.Name()))
+
 		switch ext {
 		case ".vs", ".vert":
-			stem := strings.TrimSuffix(entry.Name(), filepath.Ext(entry.Name()))
 			current := paths[stem]
 			current.vertex = filepath.Join(shaderDir, entry.Name())
 			paths[stem] = current
 		case ".fs", ".frag":
-			stem := strings.TrimSuffix(entry.Name(), filepath.Ext(entry.Name()))
 			current := paths[stem]
 			current.fragment = filepath.Join(shaderDir, entry.Name())
 			paths[stem] = current

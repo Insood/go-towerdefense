@@ -15,6 +15,7 @@ const (
 	gridLength = 20
 
 	baseCubeSize    = float32(1)
+	axisLength      = float32(4)
 	cameraPanSpeed  = float32(12)
 	cameraZoomSpeed = float32(2)
 	cameraMinZoom   = float32(3)
@@ -22,8 +23,8 @@ const (
 )
 
 var (
-	cameraPosition = rl.NewVector3(8, 6, 0)
-	cameraTarget   = rl.Vector3Zero()
+	cameraPosition = rl.NewVector3(gridWidth/2, 6, gridLength+8)
+	cameraTarget   = rl.NewVector3(gridWidth/2, 0, gridLength)
 	cameraUp       = rl.NewVector3(0, 1, 0)
 	cameraFOVY     = float32(45)
 

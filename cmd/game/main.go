@@ -28,8 +28,8 @@ func main() {
 		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
 			ray := rl.GetScreenToWorldRay(rl.GetMousePosition(), game.camera)
 			if point, ok := intersectRayGroundPlane(ray); ok {
-				gridX := int(math.Round(float64(point.X)))
-				gridZ := int(math.Round(float64(point.Z)))
+				gridX := int(math.Floor(float64(point.X)))
+				gridZ := int(math.Floor(float64(point.Z)))
 
 				fmt.Printf(
 					"click world=(%.2f, %.2f, %.2f) grid=(%d, %d)\n",
@@ -39,7 +39,7 @@ func main() {
 					gridX,
 					gridZ,
 				)
-				game.TryPlaceCube(gridX, gridZ)
+				game.grid.PlaceEntity(gridX, gridZ, game.models["cube"], baseCubeColor)
 			} else {
 				fmt.Println("click missed the ground plane")
 			}
@@ -50,6 +50,7 @@ func main() {
 		rl.BeginMode3D(game.camera)
 
 		game.UpdateSystems()
+		drawCoordinateSystem()
 
 		rl.EndMode3D()
 
@@ -72,4 +73,11 @@ func intersectRayGroundPlane(ray rl.Ray) (rl.Vector3, bool) {
 		groundPlaneY,
 		ray.Position.Z+ray.Direction.Z*t,
 	), true
+}
+
+func drawCoordinateSystem() {
+	origin := rl.Vector3Zero()
+	rl.DrawLine3D(origin, rl.NewVector3(axisLength, 0, 0), rl.Red)
+	rl.DrawLine3D(origin, rl.NewVector3(0, axisLength, 0), rl.Green)
+	rl.DrawLine3D(origin, rl.NewVector3(0, 0, axisLength), rl.Blue)
 }
