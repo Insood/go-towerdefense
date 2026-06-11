@@ -81,6 +81,13 @@ func (game *Game) loadModels() {
 	spawner := rl.LoadModelFromMesh(rl.GenMeshCube(1, 0.5, 1))
 	spawner.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = texture
 	game.models["spawner"] = &spawner
+
+	mobCheckeredImage := rl.GenImageChecked(2, 2, 1, 1, rl.Orange, rl.Purple)
+	mobTexture := rl.LoadTextureFromImage(mobCheckeredImage)
+
+	miniMob := rl.LoadModelFromMesh(rl.GenMeshCube(0.25, 0.25, 0.25))
+	miniMob.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = mobTexture
+	game.models["miniMob"] = &miniMob
 }
 
 func (game *Game) placeModels() {

@@ -90,6 +90,48 @@ func (grid *GameGrid) SetCellBuildable(x, z int, buildable bool) bool {
 	return true
 }
 
+func (grid *GameGrid) Distance(x, z int) int {
+	cell, ok := grid.Cell(x, z)
+	if !ok {
+		return -1
+	}
+
+	return cell.distance
+}
+
+func (grid *GameGrid) NextLowerDistanceCell(x, z int) (int, int, bool) {
+	cell, ok := grid.Cell(x, z)
+	if !ok || cell.distance < 0 {
+		return 0, 0, false
+	}
+
+	bestDistance := cell.distance
+	bestX := x
+	bestZ := z
+
+	for _, delta := range [][2]int{{0, -1}, {0, 1}, {-1, 0}, {1, 0}} {
+		nextX := x + delta[0]
+		nextZ := z + delta[1]
+		nextCell, ok := grid.Cell(nextX, nextZ)
+		if !ok || nextCell.distance < 0 {
+			continue
+		}
+		if nextCell.distance >= bestDistance {
+			continue
+		}
+
+		bestDistance = nextCell.distance
+		bestX = nextX
+		bestZ = nextZ
+	}
+
+	if bestDistance == cell.distance {
+		return 0, 0, false
+	}
+
+	return bestX, bestZ, true
+}
+
 func (grid *GameGrid) PlaceEntity(x, z int, model *rl.Model, tint color.RGBA) bool {
 	return grid.placeEntity(x, z, groundPlaneY+0.5, model, tint, false)
 }

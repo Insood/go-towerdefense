@@ -154,41 +154,80 @@ func (system *RenderSystem3D) renderModels() {
 }
 
 type SpawnerSystem struct {
-	spawnMapper *ecs.Map2[Position3, Spawner]
+	spawnerMapper      *ecs.Map3[Position3, Renderable, Spawner]
+	spawnerFilter      *ecs.Filter2[Position3, Spawner]
+	enemyMapper        *ecs.Map3[Position3, Renderable, Enemy]
+	movementGoalMapper *ecs.Map1[MovementGoal]
 }
 
 func (system *SpawnerSystem) Initialize(game *Game) {
-	system.spawnMapper = ecs.NewMap2[Position3, Spawner](game.world)
-
-	renderable := ecs.NewMap2[Position3, Renderable](game.world)
-
+	system.spawnerMapper = ecs.NewMap3[Position3, Renderable, Spawner](game.world)
+	system.spawnerFilter = ecs.NewFilter2[Position3, Spawner](game.world)
+	system.enemyMapper = ecs.NewMap3[Position3, Renderable, Enemy](game.world)
+	system.movementGoalMapper = ecs.NewMap1[MovementGoal](game.world)
 	spawnerModel := game.models["spawner"]
 	for _, position := range spawnerGridPositions() {
-		pos3 := &Position3{
-			X: float32(position.x) + gridCellCenter,
-			Y: spawnerY,
-			Z: float32(position.z) + gridCellCenter,
-		}
-
-		system.spawnMapper.NewEntity(pos3, &Spawner{})
-
-		entity := renderable.NewEntity(
-			pos3,
+		system.spawnerMapper.NewEntity(
+			&Position3{
+				X: float32(position.x) + gridCellCenter,
+				Y: spawnerY,
+				Z: float32(position.z) + gridCellCenter,
+			},
 			&Renderable{
 				model:             spawnerModel,
 				scale:             1.0,
 				tint:              rl.White,
 				shaderTintEnabled: false,
 			},
+			&Spawner{},
+		)
+	}
+}
+
+func (system *SpawnerSystem) Update(game *Game) {
+	if (game.tick+1)%100 != 0 {
+		return
+	}
+
+	spawnPositions := make([]Position3, 0, 4)
+	query := system.spawnerFilter.Query()
+	for query.Next() {
+		position, _ := query.Get()
+		spawnPositions = append(spawnPositions, *position)
+	}
+	query.Close()
+
+	for _, spawnPosition := range spawnPositions {
+		gridX := int(spawnPosition.X)
+		gridZ := int(spawnPosition.Z)
+
+		enemyEntity := system.enemyMapper.NewEntity(
+			&Position3{
+				X: spawnPosition.X,
+				Y: spawnPosition.Y,
+				Z: spawnPosition.Z,
+			},
+			&Renderable{
+				model:             game.models["miniMob"],
+				scale:             1.0,
+				tint:              rl.White,
+				shaderTintEnabled: false,
+			},
+			&Enemy{},
 		)
 
-		if !game.grid.SetCellEntityForce(position.x, position.z, entity) {
-			panic("failed to place spawner entity on the grid")
+		if goalX, goalZ, ok := game.grid.NextLowerDistanceCell(gridX, gridZ); ok {
+			system.movementGoalMapper.Add(enemyEntity, &MovementGoal{
+				nextGridX: goalX,
+				nextGridY: goalZ,
+			})
 		}
 	}
 }
 
-func (system *SpawnerSystem) Update(game *Game) {}
+func (system *SpawnerSystem) spawnEntity() {
+
+}
 
 type GridDistanceDebugRenderSystem struct{}
 

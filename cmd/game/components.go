@@ -18,3 +18,9 @@ type Renderable struct {
 
 type Spawner struct{}
 
+type MovementGoal struct {
+	nextGridX int
+	nextGridY int
+}
+
+type Enemy struct{}
