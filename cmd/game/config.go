@@ -11,9 +11,22 @@ const (
 	groundPlaneY       = float32(0)
 	rayParallelEpsilon = float32(0.0001)
 
-	gridWidth       = 13
-	gridLength      = 11
-	gridBorderWidth = 2
+	gridWidth               = 13
+	gridLength              = 11
+	gridBorderWidth         = 2
+	gridCenterX             = gridWidth / 2
+	gridCenterZ             = gridLength / 2
+	gridTopRow              = 0
+	gridBottomRow           = gridLength - 1
+	gridLeftCol             = 0
+	gridRightCol            = gridWidth - 1
+	gridCellCenter          = float32(0.5)
+	spireY                  = groundPlaneY + 1.0
+	spawnerY                = groundPlaneY + 0.25
+	debugShowGridDistances  = true
+	gridDistanceLabelY      = float32(0.0)
+	gridDistanceLabelSize   = int32(16)
+	gridDistanceLabelOffset = int32(0)
 
 	baseCubeSize    = float32(1)
 	axisLength      = float32(4)
@@ -24,7 +37,7 @@ const (
 )
 
 var (
-	cameraPosition    = rl.NewVector3(gridWidth/2.0, 8, gridLength*2/3+8)
+	cameraPosition    = rl.NewVector3(gridWidth/2.0, 12, gridLength*2/3+8)
 	cameraTarget      = rl.NewVector3(gridWidth/2.0, 0, gridLength*2/3)
 	cameraUp          = rl.NewVector3(0, 1, 0)
 	cameraFOVY        = float32(45)

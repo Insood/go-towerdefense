@@ -18,6 +18,7 @@ type GameGrid struct {
 
 type GameGridCell struct {
 	entity    ecs.Entity
+	distance  int
 	occupied  bool
 	buildable bool
 }
@@ -29,6 +30,7 @@ func NewGameGrid(width, length int) GameGrid {
 		cells:  make([]GameGridCell, width*length),
 	}
 	grid.initializeBuildableCells()
+	grid.initializeDistances()
 	return grid
 }
 
@@ -165,6 +167,15 @@ func (grid *GameGrid) initializeBuildableCells() {
 			cell := &grid.cells[z*grid.Width+x]
 			cell.buildable = x >= gridBorderWidth && x < grid.Width-gridBorderWidth &&
 				z >= gridBorderWidth && z < grid.Length-gridBorderWidth
+		}
+	}
+}
+
+func (grid *GameGrid) initializeDistances() {
+	for z := 0; z < grid.Length; z++ {
+		for x := 0; x < grid.Width; x++ {
+			cell := &grid.cells[z*grid.Width+x]
+			cell.distance = manhattanDistance(x, z, gridCenterX, gridCenterZ)
 		}
 	}
 }

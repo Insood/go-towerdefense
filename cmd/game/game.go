@@ -43,7 +43,9 @@ func InitializeGame() *Game {
 	game.loadShaders()
 	game.loadModels()
 	game.placeSpire()
-	game.AddSystem(&RenderSystem{})
+	game.placeSpawners()
+	game.AddSystem(&RenderSystem3D{})
+	game.AddSystem(&GridDistanceDebugRenderSystem{})
 	game.InitializeSystems()
 	game.placeModels()
 
@@ -91,7 +93,7 @@ func (game *Game) placeModels() {
 			}
 
 			modelMapper.NewEntity(
-				&Position3{X: float32(x) + 0.5, Y: 0, Z: float32(z) + 0.5},
+				&Position3{X: float32(x) + gridCellCenter, Y: 0, Z: float32(z) + gridCellCenter},
 				&Renderable{
 					model:             plane,
 					scale:             1.0,
@@ -106,11 +108,29 @@ func (game *Game) placeModels() {
 
 func (game *Game) placeSpire() {
 	spire := game.models["spire"]
-	centerX := gridWidth / 2
-	centerZ := gridLength / 2
 
-	if !game.grid.ForcePlaceEntity(centerX, centerZ, groundPlaneY+1.0, spire, rl.White) {
+	if !game.grid.ForcePlaceEntity(gridCenterX, gridCenterZ, spireY, spire, rl.White) {
 		panic("failed to place spire at the center of the grid")
+	}
+}
+
+func (game *Game) placeSpawners() {
+	spawner := game.models["spawner"]
+
+	spawnPositions := []struct {
+		x int
+		z int
+	}{
+		{x: gridCenterX, z: gridTopRow},
+		{x: gridCenterX, z: gridBottomRow},
+		{x: gridLeftCol, z: gridCenterZ},
+		{x: gridRightCol, z: gridCenterZ},
+	}
+
+	for _, position := range spawnPositions {
+		if !game.grid.ForcePlaceEntity(position.x, position.z, spawnerY, spawner, rl.White) {
+			panic("failed to place spawner on the edge of the grid")
+		}
 	}
 }
 
