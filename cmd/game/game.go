@@ -42,6 +42,7 @@ func InitializeGame() *Game {
 	game.grid.Initialize(game.world)
 	game.loadShaders()
 	game.loadModels()
+	game.placeSpire()
 	game.AddSystem(&RenderSystem{})
 	game.InitializeSystems()
 	game.placeModels()
@@ -72,6 +73,10 @@ func (game *Game) loadModels() {
 	spire := rl.LoadModelFromMesh(rl.GenMeshCube(1, 2, 1))
 	spire.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = texture
 	game.models["spire"] = &spire
+
+	spawner := rl.LoadModelFromMesh(rl.GenMeshCube(1, 0.5, 1))
+	spawner.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = texture
+	game.models["spawner"] = &spawner
 }
 
 func (game *Game) placeModels() {
@@ -96,6 +101,16 @@ func (game *Game) placeModels() {
 				},
 			)
 		}
+	}
+}
+
+func (game *Game) placeSpire() {
+	spire := game.models["spire"]
+	centerX := gridWidth / 2
+	centerZ := gridLength / 2
+
+	if !game.grid.ForcePlaceEntity(centerX, centerZ, groundPlaneY+1.0, spire, rl.White) {
+		panic("failed to place spire at the center of the grid")
 	}
 }
 
