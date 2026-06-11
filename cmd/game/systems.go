@@ -154,17 +154,15 @@ func (system *RenderSystem3D) renderModels() {
 }
 
 type SpawnerSystem struct {
-	spawnerMapper      *ecs.Map3[Position3, Renderable, Spawner]
-	spawnerFilter      *ecs.Filter2[Position3, Spawner]
-	enemyMapper        *ecs.Map3[Position3, Renderable, Enemy]
-	movementGoalMapper *ecs.Map1[MovementGoal]
+	spawnerMapper *ecs.Map3[Position3, Renderable, Spawner]
+	spawnerFilter *ecs.Filter2[Position3, Spawner]
+	enemyMapper   *ecs.Map4[Position3, Renderable, Enemy, MovementGoal]
 }
 
 func (system *SpawnerSystem) Initialize(game *Game) {
 	system.spawnerMapper = ecs.NewMap3[Position3, Renderable, Spawner](game.world)
 	system.spawnerFilter = ecs.NewFilter2[Position3, Spawner](game.world)
-	system.enemyMapper = ecs.NewMap3[Position3, Renderable, Enemy](game.world)
-	system.movementGoalMapper = ecs.NewMap1[MovementGoal](game.world)
+	system.enemyMapper = ecs.NewMap4[Position3, Renderable, Enemy, MovementGoal](game.world)
 	spawnerModel := game.models["spawner"]
 	for _, position := range spawnerGridPositions() {
 		system.spawnerMapper.NewEntity(
@@ -201,7 +199,7 @@ func (system *SpawnerSystem) Update(game *Game) {
 		gridX := int(spawnPosition.X)
 		gridZ := int(spawnPosition.Z)
 
-		enemyEntity := system.enemyMapper.NewEntity(
+		system.enemyMapper.NewEntity(
 			&Position3{
 				X: spawnPosition.X,
 				Y: spawnPosition.Y,
@@ -214,19 +212,54 @@ func (system *SpawnerSystem) Update(game *Game) {
 				shaderTintEnabled: false,
 			},
 			&Enemy{},
+			&MovementGoal{
+				nextGridX: gridX,
+				nextGridY: gridZ,
+			},
 		)
-
-		if goalX, goalZ, ok := game.grid.NextLowerDistanceCell(gridX, gridZ); ok {
-			system.movementGoalMapper.Add(enemyEntity, &MovementGoal{
-				nextGridX: goalX,
-				nextGridY: goalZ,
-			})
-		}
 	}
 }
 
-func (system *SpawnerSystem) spawnEntity() {
+type EnemyGoalSetter struct {
+	filter             *ecs.Filter3[Position3, MovementGoal, Enemy]
+	movementGoalMapper *ecs.Map1[MovementGoal]
+}
 
+func (system *EnemyGoalSetter) Initialize(game *Game) {
+	system.filter = ecs.NewFilter3[Position3, MovementGoal, Enemy](game.world)
+	system.movementGoalMapper = ecs.NewMap1[MovementGoal](game.world)
+}
+
+func (system *EnemyGoalSetter) Update(game *Game) {
+	entitiesToClear := make([]ecs.Entity, 0)
+
+	query := system.filter.Query()
+	for query.Next() {
+		position, movementGoal, _ := query.Get()
+
+		goalPosition := rl.NewVector3(
+			float32(movementGoal.nextGridX)+gridCellCenter,
+			position.Y,
+			float32(movementGoal.nextGridY)+gridCellCenter,
+		)
+		if rl.Vector3Distance(*position, goalPosition) > enemyGoalDelta {
+			continue
+		}
+
+		nextGridX, nextGridY, ok := game.grid.NextLowerDistanceCell(movementGoal.nextGridX, movementGoal.nextGridY)
+		if !ok || (nextGridX == gridCenterX && nextGridY == gridCenterZ) {
+			entitiesToClear = append(entitiesToClear, query.Entity())
+			continue
+		}
+
+		movementGoal.nextGridX = nextGridX
+		movementGoal.nextGridY = nextGridY
+	}
+	query.Close()
+
+	for _, entity := range entitiesToClear {
+		system.movementGoalMapper.Remove(entity)
+	}
 }
 
 type GridDistanceDebugRenderSystem struct{}

@@ -27,6 +27,7 @@ const (
 	gridDistanceLabelY      = float32(0.0)
 	gridDistanceLabelSize   = int32(16)
 	gridDistanceLabelOffset = int32(0)
+	enemyGoalDelta          = float32(0.05)
 
 	baseCubeSize    = float32(1)
 	axisLength      = float32(4)
