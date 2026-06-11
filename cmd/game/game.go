@@ -19,6 +19,7 @@ type Game struct {
 	grid         GameGrid
 	systems      []System
 	world        *ecs.World
+	tick         int
 }
 
 func InitializeGame() *Game {
@@ -129,6 +130,7 @@ func (game *Game) UpdateSystems() {
 	for _, system := range game.systems {
 		system.Update(game)
 	}
+	game.tick += 1
 }
 
 func (game *Game) UnloadShaders() {
