@@ -30,7 +30,7 @@ func NewGameGrid(width, length int) GameGrid {
 		cells:  make([]GameGridCell, width*length),
 	}
 	grid.initializeBuildableCells()
-	grid.initializeDistances()
+	grid.RecalculateDistances()
 	return grid
 }
 
@@ -64,6 +64,7 @@ func (grid *GameGrid) SetCellEntity(x, z int, entity ecs.Entity) bool {
 	}
 
 	cell.SetEntity(entity)
+	grid.RecalculateDistances()
 	return true
 }
 
@@ -122,6 +123,7 @@ func (grid *GameGrid) placeEntity(x, z int, y float32, model *rl.Model, tint col
 	if ignoreBuildable {
 		cell.buildable = false
 	}
+	grid.RecalculateDistances()
 
 	fmt.Printf("entity placed at grid (%d, %d)\n", x, z)
 	return true
@@ -171,11 +173,52 @@ func (grid *GameGrid) initializeBuildableCells() {
 	}
 }
 
-func (grid *GameGrid) initializeDistances() {
-	for z := 0; z < grid.Length; z++ {
-		for x := 0; x < grid.Width; x++ {
-			cell := &grid.cells[z*grid.Width+x]
-			cell.distance = manhattanDistance(x, z, gridCenterX, gridCenterZ)
+func (grid *GameGrid) RecalculateDistances() {
+	for i := range grid.cells {
+		grid.cells[i].distance = -1
+	}
+
+	startX := gridCenterX
+	startZ := gridCenterZ
+	startIndex, ok := grid.index(startX, startZ)
+	if !ok {
+		return
+	}
+
+	type gridCoord struct {
+		x int
+		z int
+	}
+
+	queue := make([]gridCoord, 0, len(grid.cells))
+	queue = append(queue, gridCoord{x: startX, z: startZ})
+	grid.cells[startIndex].distance = 0
+
+	for head := 0; head < len(queue); head++ {
+		current := queue[head]
+		currentIndex, _ := grid.index(current.x, current.z)
+		currentDistance := grid.cells[currentIndex].distance
+
+		for _, delta := range [][2]int{{0, -1}, {0, 1}, {-1, 0}, {1, 0}} {
+			nextX := current.x + delta[0]
+			nextZ := current.z + delta[1]
+			nextIndex, ok := grid.index(nextX, nextZ)
+			if !ok {
+				continue
+			}
+
+			nextCell := &grid.cells[nextIndex]
+			if nextCell.distance >= 0 {
+				continue
+			}
+			if nextCell.occupied && !(nextX == startX && nextZ == startZ) {
+				continue
+			}
+
+			nextCell.distance = currentDistance + 1
+			if !nextCell.occupied {
+				queue = append(queue, gridCoord{x: nextX, z: nextZ})
+			}
 		}
 	}
 }

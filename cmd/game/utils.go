@@ -35,17 +35,3 @@ func intersectRayGroundPlane(ray rl.Ray) (rl.Vector3, bool) {
 		ray.Position.Z+ray.Direction.Z*t,
 	), true
 }
-
-func manhattanDistance(x, z, centerX, centerZ int) int {
-	dx := x - centerX
-	if dx < 0 {
-		dx = -dx
-	}
-
-	dz := z - centerZ
-	if dz < 0 {
-		dz = -dz
-	}
-
-	return dx + dz
-}
