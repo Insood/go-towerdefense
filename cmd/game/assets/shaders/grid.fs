@@ -3,6 +3,8 @@
 in vec2 fragTexCoord;
 in vec4 fragColor;
 
+uniform vec4 tintColor;
+
 out vec4 finalColor;
 
 void main()
@@ -18,5 +20,5 @@ void main()
     vec3 lineColor = vec3(0.35, 0.40, 0.46);
     vec3 color = mix(fillColor, lineColor, gridLine);
 
-    finalColor = vec4(color, 1.0) * fragColor;
+    finalColor = vec4(color, 1.0) * fragColor * tintColor;
 }

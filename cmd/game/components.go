@@ -9,7 +9,9 @@ import (
 type Position3 = rl.Vector3
 
 type Renderable struct {
-	model *rl.Model
-	scale float32
-	tint  color.RGBA
+	model             *rl.Model
+	scale             float32
+	tint              color.RGBA
+	shaderTint        color.RGBA
+	shaderTintEnabled bool
 }

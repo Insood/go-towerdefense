@@ -44,7 +44,7 @@ func InitializeGame() *Game {
 	game.loadModels()
 	game.AddSystem(&RenderSystem{})
 	game.InitializeSystems()
-	game.placeGroundPlane()
+	game.placeModels()
 
 	rl.SetTargetFPS(targetFPS)
 	return game
@@ -68,17 +68,32 @@ func (game *Game) loadModels() {
 	cube := rl.LoadModelFromMesh(rl.GenMeshCube(1, 1, 1))
 	cube.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = texture
 	game.models["cube"] = &cube
+
+	spire := rl.LoadModelFromMesh(rl.GenMeshCube(1, 2, 1))
+	spire.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = texture
+	game.models["spire"] = &spire
 }
 
-func (game *Game) placeGroundPlane() {
-	mapper := ecs.NewMap2[Position3, Renderable](game.world)
+func (game *Game) placeModels() {
+	modelMapper := ecs.NewMap2[Position3, Renderable](game.world)
 
 	plane := game.models["plane"]
 	for x := 0; x < gridWidth; x++ {
 		for z := 0; z < gridLength; z++ {
-			mapper.NewEntity(
+			shaderTint := buildableGridTint
+			if cell, ok := game.grid.Cell(x, z); ok && !cell.Buildable() {
+				shaderTint = noBuildGridTint
+			}
+
+			modelMapper.NewEntity(
 				&Position3{X: float32(x) + 0.5, Y: 0, Z: float32(z) + 0.5},
-				&Renderable{model: plane, scale: 1.0, tint: rl.White},
+				&Renderable{
+					model:             plane,
+					scale:             1.0,
+					tint:              rl.White,
+					shaderTint:        shaderTint,
+					shaderTintEnabled: true,
+				},
 			)
 		}
 	}

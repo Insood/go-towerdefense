@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"image/color"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	ecs "github.com/mlange-42/ark/ecs"
@@ -86,10 +87,38 @@ func (system *RenderSystem) Update(game *Game) {
 	for query.Next() {
 		position, renderable := query.Get()
 
-		rl.DrawModel(*renderable.model, *position, renderable.scale, renderable.tint)
+		drawTint := renderable.tint
+		if renderable.shaderTintEnabled {
+			materials := renderable.model.GetMaterials()
+			if len(materials) > 0 {
+				shader := materials[0].Shader
+				location := rl.GetShaderLocation(shader, "tintColor")
+				if location >= 0 {
+					tint := colorToVec4(renderable.shaderTint)
+					rl.SetShaderValue(
+						shader,
+						location,
+						tint[:],
+						rl.ShaderUniformVec4,
+					)
+				}
+			}
+			drawTint = rl.White
+		}
+
+		rl.DrawModel(*renderable.model, *position, renderable.scale, drawTint)
 	}
 }
 
 func cameraMoveOnGround(x, z, distance float32) rl.Vector3 {
 	return rl.NewVector3(x*distance, 0, z*distance)
+}
+
+func colorToVec4(c color.RGBA) [4]float32 {
+	return [4]float32{
+		float32(c.R) / 255,
+		float32(c.G) / 255,
+		float32(c.B) / 255,
+		float32(c.A) / 255,
+	}
 }

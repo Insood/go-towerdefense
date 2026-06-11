@@ -17,16 +17,19 @@ type GameGrid struct {
 }
 
 type GameGridCell struct {
-	entity   ecs.Entity
-	occupied bool
+	entity    ecs.Entity
+	occupied  bool
+	buildable bool
 }
 
 func NewGameGrid(width, length int) GameGrid {
-	return GameGrid{
+	grid := GameGrid{
 		Width:  width,
 		Length: length,
 		cells:  make([]GameGridCell, width*length),
 	}
+	grid.initializeBuildableCells()
+	return grid
 }
 
 func (grid *GameGrid) Initialize(world *ecs.World) {
@@ -54,7 +57,7 @@ func (grid *GameGrid) CellEntity(x, z int) (ecs.Entity, bool) {
 
 func (grid *GameGrid) SetCellEntity(x, z int, entity ecs.Entity) bool {
 	cell, ok := grid.Cell(x, z)
-	if !ok || cell.HasEntity() {
+	if !ok || !cell.Buildable() || cell.HasEntity() {
 		return false
 	}
 
@@ -72,6 +75,10 @@ func (grid *GameGrid) PlaceEntity(x, z int, model *rl.Model, tint color.RGBA) bo
 		fmt.Printf("cube placement blocked: out of bounds (%d, %d)\n", x, z)
 		return false
 	}
+	if !cell.Buildable() {
+		fmt.Printf("cube placement blocked: no-build zone (%d, %d)\n", x, z)
+		return false
+	}
 	if cell.HasEntity() {
 		fmt.Printf("cube placement blocked: occupied cell (%d, %d)\n", x, z)
 		return false
@@ -84,9 +91,11 @@ func (grid *GameGrid) PlaceEntity(x, z int, model *rl.Model, tint color.RGBA) bo
 			Z: float32(z) + 0.5,
 		},
 		&Renderable{
-			model: model,
-			scale: 1.0,
-			tint:  tint,
+			model:             model,
+			scale:             1.0,
+			tint:              tint,
+			shaderTint:        rl.White,
+			shaderTintEnabled: false,
 		},
 	)
 	cell.SetEntity(entity)
@@ -117,10 +126,24 @@ func (cell *GameGridCell) HasEntity() bool {
 	return cell.occupied
 }
 
+func (cell *GameGridCell) Buildable() bool {
+	return cell.buildable
+}
+
 func (grid *GameGrid) index(x, z int) (int, bool) {
 	if x < 0 || x >= grid.Width || z < 0 || z >= grid.Length {
 		return 0, false
 	}
 
 	return z*grid.Width + x, true
+}
+
+func (grid *GameGrid) initializeBuildableCells() {
+	for z := 0; z < grid.Length; z++ {
+		for x := 0; x < grid.Width; x++ {
+			cell := &grid.cells[z*grid.Width+x]
+			cell.buildable = x >= gridBorderWidth && x < grid.Width-gridBorderWidth &&
+				z >= gridBorderWidth && z < grid.Length-gridBorderWidth
+		}
+	}
 }
