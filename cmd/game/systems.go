@@ -153,6 +153,43 @@ func (system *RenderSystem3D) renderModels() {
 	}
 }
 
+type SpawnerSystem struct {
+	spawnMapper *ecs.Map2[Position3, Spawner]
+}
+
+func (system *SpawnerSystem) Initialize(game *Game) {
+	system.spawnMapper = ecs.NewMap2[Position3, Spawner](game.world)
+
+	renderable := ecs.NewMap2[Position3, Renderable](game.world)
+
+	spawnerModel := game.models["spawner"]
+	for _, position := range spawnerGridPositions() {
+		pos3 := &Position3{
+			X: float32(position.x) + gridCellCenter,
+			Y: spawnerY,
+			Z: float32(position.z) + gridCellCenter,
+		}
+
+		system.spawnMapper.NewEntity(pos3, &Spawner{})
+
+		entity := renderable.NewEntity(
+			pos3,
+			&Renderable{
+				model:             spawnerModel,
+				scale:             1.0,
+				tint:              rl.White,
+				shaderTintEnabled: false,
+			},
+		)
+
+		if !game.grid.SetCellEntityForce(position.x, position.z, entity) {
+			panic("failed to place spawner entity on the grid")
+		}
+	}
+}
+
+func (system *SpawnerSystem) Update(game *Game) {}
+
 type GridDistanceDebugRenderSystem struct{}
 
 func (system *GridDistanceDebugRenderSystem) Initialize(game *Game) {}

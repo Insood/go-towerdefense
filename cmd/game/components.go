@@ -15,3 +15,6 @@ type Renderable struct {
 	shaderTint        color.RGBA
 	shaderTintEnabled bool
 }
+
+type Spawner struct{}
+

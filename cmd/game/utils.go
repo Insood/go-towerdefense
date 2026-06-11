@@ -35,3 +35,17 @@ func intersectRayGroundPlane(ray rl.Ray) (rl.Vector3, bool) {
 		ray.Position.Z+ray.Direction.Z*t,
 	), true
 }
+
+type gridCoord struct {
+	x int
+	z int
+}
+
+func spawnerGridPositions() []gridCoord {
+	return []gridCoord{
+		{x: gridCenterX, z: gridTopRow},
+		{x: gridCenterX, z: gridBottomRow},
+		{x: gridLeftCol, z: gridCenterZ},
+		{x: gridRightCol, z: gridCenterZ},
+	}
+}

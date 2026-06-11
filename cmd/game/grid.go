@@ -68,6 +68,18 @@ func (grid *GameGrid) SetCellEntity(x, z int, entity ecs.Entity) bool {
 	return true
 }
 
+func (grid *GameGrid) SetCellEntityForce(x, z int, entity ecs.Entity) bool {
+	cell, ok := grid.Cell(x, z)
+	if !ok || cell.HasEntity() {
+		return false
+	}
+
+	cell.SetEntity(entity)
+	cell.buildable = false
+	grid.RecalculateDistances()
+	return true
+}
+
 func (grid *GameGrid) SetCellBuildable(x, z int, buildable bool) bool {
 	cell, ok := grid.Cell(x, z)
 	if !ok {
