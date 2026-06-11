@@ -44,6 +44,7 @@ func InitializeGame() *Game {
 	game.loadModels()
 	game.placeSpire()
 	game.placeSpawners()
+	game.AddSystem(&InputSystem{})
 	game.AddSystem(&RenderSystem3D{})
 	game.AddSystem(&GridDistanceDebugRenderSystem{})
 	game.InitializeSystems()

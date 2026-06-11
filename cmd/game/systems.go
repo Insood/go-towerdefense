@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"math"
 	"strconv"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -10,6 +12,35 @@ import (
 type System interface {
 	Initialize(*Game)
 	Update(*Game)
+}
+
+type InputSystem struct{}
+
+func (system *InputSystem) Initialize(game *Game) {}
+
+func (system *InputSystem) Update(game *Game) {
+	if !rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
+		return
+	}
+
+	ray := rl.GetScreenToWorldRay(rl.GetMousePosition(), game.camera)
+	if point, ok := intersectRayGroundPlane(ray); ok {
+		gridX := int(math.Floor(float64(point.X)))
+		gridZ := int(math.Floor(float64(point.Z)))
+
+		fmt.Printf(
+			"click world=(%.2f, %.2f, %.2f) grid=(%d, %d)\n",
+			point.X,
+			point.Y,
+			point.Z,
+			gridX,
+			gridZ,
+		)
+		game.grid.PlaceEntity(gridX, gridZ, game.models["cube"], baseCubeColor)
+		return
+	}
+
+	fmt.Println("click missed the ground plane")
 }
 
 type CameraSystem struct{}
