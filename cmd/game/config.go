@@ -24,8 +24,8 @@ const (
 )
 
 var (
-	cameraPosition    = rl.NewVector3(gridWidth/2.0, 6, gridLength+8)
-	cameraTarget      = rl.NewVector3(gridWidth/2.0, 0, gridLength)
+	cameraPosition    = rl.NewVector3(gridWidth/2.0, 8, gridLength*2/3+8)
+	cameraTarget      = rl.NewVector3(gridWidth/2.0, 0, gridLength*2/3)
 	cameraUp          = rl.NewVector3(0, 1, 0)
 	cameraFOVY        = float32(45)
 	baseCubePosition  = rl.Vector3Zero()
