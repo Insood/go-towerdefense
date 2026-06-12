@@ -86,6 +86,7 @@ func (game *Game) loadModels() {
 
 	mobCheckeredImage := rl.GenImageChecked(2, 2, 1, 1, rl.Orange, rl.Purple)
 	mobTexture := rl.LoadTextureFromImage(mobCheckeredImage)
+	rl.UnloadImage(mobCheckeredImage)
 
 	miniMob := rl.LoadModelFromMesh(rl.GenMeshCube(0.25, 0.25, 0.25))
 	miniMob.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = mobTexture
@@ -142,7 +143,10 @@ func (game *Game) UpdateSystems() {
 	game.tick += 1
 }
 
-func (game *Game) UnloadShaders() {
+func (game *Game) UnloadAssets() {
+	for _, model := range game.models {
+		rl.UnloadModel(*model)
+	}
 	for _, shader := range game.shaders {
 		rl.UnloadShader(shader)
 	}

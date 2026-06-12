@@ -9,7 +9,7 @@ func main() {
 	defer rl.CloseWindow()
 
 	game := InitializeGame()
-	defer game.UnloadShaders()
+	defer game.UnloadAssets()
 
 	for !rl.WindowShouldClose() {
 		game.cameraSystem.Update(game)
