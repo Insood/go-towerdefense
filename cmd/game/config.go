@@ -23,7 +23,6 @@ const (
 	gridCellCenter          = float32(0.5)
 	spireY                  = groundPlaneY + 1.0
 	spawnerY                = groundPlaneY + 0.25
-	debugShowGridDistances  = true
 	gridDistanceLabelY      = float32(0.0)
 	gridDistanceLabelSize   = int32(16)
 	gridDistanceLabelOffset = int32(0)
@@ -36,10 +35,12 @@ const (
 	cameraMinZoom   = float32(3)
 	cameraMaxZoom   = float32(20)
 
-	enemySpeed = 1.0
+	enemySpeed = 0.5
 )
 
 var (
+	debugShowGridDistances = false
+
 	cameraPosition    = rl.NewVector3(gridWidth/2.0, 12, gridLength*2/3+8)
 	cameraTarget      = rl.NewVector3(gridWidth/2.0, 0, gridLength*2/3)
 	cameraUp          = rl.NewVector3(0, 1, 0)

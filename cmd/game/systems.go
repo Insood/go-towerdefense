@@ -19,6 +19,10 @@ type InputSystem struct{}
 func (system *InputSystem) Initialize(game *Game) {}
 
 func (system *InputSystem) Update(game *Game) {
+	if rl.IsKeyPressed(rl.KeyF11) {
+		debugShowGridDistances = !debugShowGridDistances
+	}
+
 	if !rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
 		return
 	}
