@@ -22,7 +22,7 @@ func (system *MovementSystem) Update(game *Game) {
 		goalPosition := rl.NewVector3(
 			float32(movementGoal.nextGridX)+gridCellCenter,
 			position.Y,
-			float32(movementGoal.nextGridY)+gridCellCenter,
+			float32(movementGoal.nextGridZ)+gridCellCenter,
 		)
 
 		toGoal := rl.Vector3Subtract(goalPosition, *position)

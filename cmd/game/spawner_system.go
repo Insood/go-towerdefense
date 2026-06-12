@@ -66,7 +66,7 @@ func (system *SpawnerSystem) Update(game *Game) {
 			&Enemy{},
 			&MovementGoal{
 				nextGridX: gridX,
-				nextGridY: gridZ,
+				nextGridZ: gridZ,
 			},
 			&Movement{
 				speed: float32(enemySpeed),

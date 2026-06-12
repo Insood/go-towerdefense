@@ -25,20 +25,20 @@ func (system *EnemyGoalSetter) Update(game *Game) {
 		goalPosition := rl.NewVector3(
 			float32(movementGoal.nextGridX)+gridCellCenter,
 			position.Y,
-			float32(movementGoal.nextGridY)+gridCellCenter,
+			float32(movementGoal.nextGridZ)+gridCellCenter,
 		)
 		if rl.Vector3Distance(*position, goalPosition) > enemyGoalDelta {
 			continue
 		}
 
-		nextGridX, nextGridY, ok := game.grid.NextLowerDistanceCell(movementGoal.nextGridX, movementGoal.nextGridY)
-		if !ok || (nextGridX == gridCenterX && nextGridY == gridCenterZ) {
+		nextGridX, nextGridZ, ok := game.grid.NextLowerDistanceCell(movementGoal.nextGridX, movementGoal.nextGridZ)
+		if !ok || (nextGridX == gridCenterX && nextGridZ == gridCenterZ) {
 			entitiesToClear = append(entitiesToClear, query.Entity())
 			continue
 		}
 
 		movementGoal.nextGridX = nextGridX
-		movementGoal.nextGridY = nextGridY
+		movementGoal.nextGridZ = nextGridZ
 	}
 	query.Close()
 

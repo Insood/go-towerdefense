@@ -25,7 +25,7 @@ type Movement struct {
 
 type MovementGoal struct {
 	nextGridX int
-	nextGridY int
+	nextGridZ int
 }
 
 type Enemy struct{}
