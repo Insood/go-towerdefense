@@ -1,7 +1,4 @@
-.PHONY: harness game test
-
-harness:
-	go run ./cmd/harness $(filter-out $@,$(MAKECMDGOALS))
+.PHONY: game test
 
 game:
 	go run ./cmd/game $(filter-out $@,$(MAKECMDGOALS))
