@@ -12,14 +12,14 @@ import (
 )
 
 type Game struct {
-	models       map[string]*rl.Model
-	camera       rl.Camera3D
-	cameraSystem *CameraSystem
-	shaders      map[string]rl.Shader
-	grid         GameGrid
-	systems      []System
-	world        *ecs.World
-	tick         int
+	models   map[string]*rl.Model
+	textures map[string]rl.Texture2D
+	camera   rl.Camera3D
+	shaders  map[string]rl.Shader
+	grid     GameGrid
+	systems  []System
+	world    *ecs.World
+	tick     int
 }
 
 func InitializeGame() *Game {
@@ -32,18 +32,18 @@ func InitializeGame() *Game {
 	}
 
 	game := &Game{
-		models:       make(map[string]*rl.Model),
-		camera:       camera,
-		cameraSystem: &CameraSystem{},
-		shaders:      make(map[string]rl.Shader),
-		grid:         NewGameGrid(gridWidth, gridLength),
-		world:        ecs.NewWorld(),
+		models:   make(map[string]*rl.Model),
+		textures: make(map[string]rl.Texture2D),
+		camera:   camera,
+		shaders:  make(map[string]rl.Shader),
+		grid:     NewGameGrid(gridWidth, gridLength),
+		world:    ecs.NewWorld(),
 	}
-	game.cameraSystem.Initialize(game)
 	game.grid.Initialize(game.world)
 	game.loadShaders()
 	game.loadModels()
 	game.placeSpire()
+	game.AddSystem(&CameraSystem{})
 	game.AddSystem(&InputSystem{})
 	game.AddSystem(&SpawnerSystem{})
 	game.AddSystem(&EnemyGoalSetter{})
@@ -69,27 +69,27 @@ func (game *Game) loadModels() {
 	game.models["plane"] = &plane
 
 	checkeredImage := rl.GenImageChecked(2, 2, 1, 1, rl.Red, rl.Green)
-	texture := rl.LoadTextureFromImage(checkeredImage)
+	game.textures["base"] = rl.LoadTextureFromImage(checkeredImage)
 	rl.UnloadImage(checkeredImage)
 
 	cube := rl.LoadModelFromMesh(rl.GenMeshCube(1, 1, 1))
-	cube.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = texture
+	cube.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = game.textures["base"]
 	game.models["cube"] = &cube
 
 	spire := rl.LoadModelFromMesh(rl.GenMeshCube(1, 2, 1))
-	spire.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = texture
+	spire.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = game.textures["base"]
 	game.models["spire"] = &spire
 
 	spawner := rl.LoadModelFromMesh(rl.GenMeshCube(1, 0.5, 1))
-	spawner.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = texture
+	spawner.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = game.textures["base"]
 	game.models["spawner"] = &spawner
 
 	mobCheckeredImage := rl.GenImageChecked(2, 2, 1, 1, rl.Orange, rl.Purple)
-	mobTexture := rl.LoadTextureFromImage(mobCheckeredImage)
+	game.textures["miniMob"] = rl.LoadTextureFromImage(mobCheckeredImage)
 	rl.UnloadImage(mobCheckeredImage)
 
 	miniMob := rl.LoadModelFromMesh(rl.GenMeshCube(0.25, 0.25, 0.25))
-	miniMob.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = mobTexture
+	miniMob.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = game.textures["miniMob"]
 	game.models["miniMob"] = &miniMob
 }
 
@@ -146,6 +146,9 @@ func (game *Game) UpdateSystems() {
 func (game *Game) UnloadAssets() {
 	for _, model := range game.models {
 		rl.UnloadModel(*model)
+	}
+	for _, texture := range game.textures {
+		rl.UnloadTexture(texture)
 	}
 	for _, shader := range game.shaders {
 		rl.UnloadShader(shader)

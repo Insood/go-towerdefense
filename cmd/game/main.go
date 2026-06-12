@@ -12,8 +12,6 @@ func main() {
 	defer game.UnloadAssets()
 
 	for !rl.WindowShouldClose() {
-		game.cameraSystem.Update(game)
-
 		rl.BeginDrawing()
 		rl.ClearBackground(bgColor)
 
