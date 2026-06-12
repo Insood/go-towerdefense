@@ -1,11 +1,11 @@
 # Go Tower Defense
 
-This is a repo for a tiny tower defense game made using Go and raylib.
-Within the game, the player needs to defend a single target at the bottom of the screen.
-Enemies start at the top of the screen, then move to the bottom.
-The player can place towers anywhere in the game world that is not occupied by another tower or the target at the bottom of the screen.
+Tiny 3D tower defense game built in Go and raylib.
 
+The player defends a central target while enemies spawn at the map edges and move inward. Towers can be placed on buildable grid cells.
 
 ## The Game
 
 Run the game with `go run ./cmd/game` or with `make game`
+
+For repository structure and gameplay rules, see [docs/architecture.md](docs/architecture.md).
