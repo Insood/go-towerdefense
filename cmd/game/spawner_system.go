@@ -19,9 +19,9 @@ func (system *SpawnerSystem) Initialize(game *Game) {
 	for _, position := range spawnerGridPositions() {
 		system.spawnerMapper.NewEntity(
 			&Position3{
-				X: float32(position.x) + gridCellCenter,
+				X: float32(position.X) + gridCellCenter,
 				Y: spawnerY,
-				Z: float32(position.z) + gridCellCenter,
+				Z: float32(position.Z) + gridCellCenter,
 			},
 			&Renderable{
 				model:             spawnerModel,

@@ -3,6 +3,8 @@ package main
 import (
 	"image/color"
 
+	gamegrid "go-towerdefense/internal/gamegrid"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -36,16 +38,11 @@ func intersectRayGroundPlane(ray rl.Ray) (rl.Vector3, bool) {
 	), true
 }
 
-type gridCoord struct {
-	x int
-	z int
-}
-
-func spawnerGridPositions() []gridCoord {
-	return []gridCoord{
-		{x: gridCenterX, z: gridTopRow},
-		{x: gridCenterX, z: gridBottomRow},
-		{x: gridLeftCol, z: gridCenterZ},
-		{x: gridRightCol, z: gridCenterZ},
+func spawnerGridPositions() []gamegrid.GridCoord {
+	return []gamegrid.GridCoord{
+		{X: gridCenterX, Z: gridTopRow},
+		{X: gridCenterX, Z: gridBottomRow},
+		{X: gridLeftCol, Z: gridCenterZ},
+		{X: gridRightCol, Z: gridCenterZ},
 	}
 }

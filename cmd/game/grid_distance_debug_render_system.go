@@ -28,7 +28,7 @@ func (system *GridDistanceDebugRenderSystem) Update(game *Game) {
 				float32(z)+gridCellCenter,
 			)
 			screenPosition := rl.GetWorldToScreen(worldPosition, game.camera)
-			label := strconv.Itoa(cell.distance)
+			label := strconv.Itoa(cell.Distance())
 			labelWidth := rl.MeasureText(label, gridDistanceLabelSize)
 
 			drawX := int32(screenPosition.X) - labelWidth/2
