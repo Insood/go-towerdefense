@@ -20,9 +20,8 @@ type Renderable struct {
 type Spawner struct{}
 
 type HoverPreview struct {
-	gridX   int
-	gridZ   int
-	visible bool
+	gridX int
+	gridZ int
 }
 
 type Movement struct {
