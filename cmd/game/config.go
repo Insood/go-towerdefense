@@ -49,6 +49,7 @@ var (
 	baseCubeColor     = rl.NewColor(198, 120, 76, 255)
 	buildableGridTint = rl.NewColor(230, 230, 230, 255)
 	noBuildGridTint   = rl.NewColor(140, 80, 80, 255)
+	hoverPreviewTint  = rl.NewColor(70, 140, 255, 120)
 
 	bgColor = rl.LightGray
 )

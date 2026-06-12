@@ -44,6 +44,7 @@ func InitializeGame() *Game {
 	game.loadModels()
 	game.placeSpire()
 	game.AddSystem(&CameraSystem{})
+	game.AddSystem(&HoverPreviewSystem{})
 	game.AddSystem(&InputSystem{})
 	game.AddSystem(&SpawnerSystem{})
 	game.AddSystem(&EnemyGoalSetter{})

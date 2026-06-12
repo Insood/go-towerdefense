@@ -16,6 +16,8 @@ func (system *MovementSystem) Initialize(game *Game) {
 func (system *MovementSystem) Update(game *Game) {
 	deltaTime := rl.GetFrameTime()
 	query := system.filter.Query()
+	defer query.Close()
+
 	for query.Next() {
 		position, movementGoal, movement, _ := query.Get()
 
@@ -40,5 +42,4 @@ func (system *MovementSystem) Update(game *Game) {
 		direction := rl.Vector3Scale(rl.Vector3Normalize(toGoal), maxStep)
 		*position = rl.Vector3Add(*position, direction)
 	}
-	query.Close()
 }

@@ -19,6 +19,8 @@ func (system *EnemyGoalSetter) Update(game *Game) {
 	entitiesToClear := make([]ecs.Entity, 0)
 
 	query := system.filter.Query()
+	defer query.Close()
+
 	for query.Next() {
 		position, movementGoal, _ := query.Get()
 
@@ -40,7 +42,6 @@ func (system *EnemyGoalSetter) Update(game *Game) {
 		movementGoal.nextGridX = nextGridX
 		movementGoal.nextGridZ = nextGridZ
 	}
-	query.Close()
 
 	for _, entity := range entitiesToClear {
 		system.movementGoalMapper.Remove(entity)

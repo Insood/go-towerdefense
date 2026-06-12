@@ -19,6 +19,12 @@ type Renderable struct {
 
 type Spawner struct{}
 
+type HoverPreview struct {
+	gridX   int
+	gridZ   int
+	visible bool
+}
+
 type Movement struct {
 	speed float32
 }

@@ -41,11 +41,12 @@ func (system *SpawnerSystem) Update(game *Game) {
 
 	spawnPositions := make([]Position3, 0, 4)
 	query := system.spawnerFilter.Query()
+	defer query.Close()
+
 	for query.Next() {
 		position, _ := query.Get()
 		spawnPositions = append(spawnPositions, *position)
 	}
-	query.Close()
 
 	for _, spawnPosition := range spawnPositions {
 		gridX := int(spawnPosition.X)
