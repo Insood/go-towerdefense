@@ -7,6 +7,7 @@ import (
 )
 
 type Position3 = rl.Vector3
+type Velocity3 = rl.Vector3
 
 type Renderable struct {
 	model             *rl.Model
@@ -17,6 +18,10 @@ type Renderable struct {
 }
 
 type Spawner struct{}
+
+type Movement struct {
+	speed float32
+}
 
 type MovementGoal struct {
 	nextGridX int

@@ -47,6 +47,7 @@ func InitializeGame() *Game {
 	game.AddSystem(&InputSystem{})
 	game.AddSystem(&SpawnerSystem{})
 	game.AddSystem(&EnemyGoalSetter{})
+	game.AddSystem(&MovementSystem{})
 	game.AddSystem(&RenderSystem3D{})
 	game.AddSystem(&GridDistanceDebugRenderSystem{})
 	game.InitializeSystems()

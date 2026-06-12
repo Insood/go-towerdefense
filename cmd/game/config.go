@@ -35,6 +35,8 @@ const (
 	cameraZoomSpeed = float32(2)
 	cameraMinZoom   = float32(3)
 	cameraMaxZoom   = float32(20)
+
+	enemySpeed = 1.0
 )
 
 var (

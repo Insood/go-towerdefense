@@ -156,13 +156,13 @@ func (system *RenderSystem3D) renderModels() {
 type SpawnerSystem struct {
 	spawnerMapper *ecs.Map3[Position3, Renderable, Spawner]
 	spawnerFilter *ecs.Filter2[Position3, Spawner]
-	enemyMapper   *ecs.Map4[Position3, Renderable, Enemy, MovementGoal]
+	enemyMapper   *ecs.Map5[Position3, Renderable, Enemy, MovementGoal, Movement]
 }
 
 func (system *SpawnerSystem) Initialize(game *Game) {
 	system.spawnerMapper = ecs.NewMap3[Position3, Renderable, Spawner](game.world)
 	system.spawnerFilter = ecs.NewFilter2[Position3, Spawner](game.world)
-	system.enemyMapper = ecs.NewMap4[Position3, Renderable, Enemy, MovementGoal](game.world)
+	system.enemyMapper = ecs.NewMap5[Position3, Renderable, Enemy, MovementGoal, Movement](game.world)
 	spawnerModel := game.models["spawner"]
 	for _, position := range spawnerGridPositions() {
 		system.spawnerMapper.NewEntity(
@@ -216,8 +216,49 @@ func (system *SpawnerSystem) Update(game *Game) {
 				nextGridX: gridX,
 				nextGridY: gridZ,
 			},
+			&Movement{
+				speed: float32(enemySpeed),
+			},
 		)
 	}
+}
+
+type MovementSystem struct {
+	filter *ecs.Filter4[Position3, MovementGoal, Movement, Enemy]
+}
+
+func (system *MovementSystem) Initialize(game *Game) {
+	system.filter = ecs.NewFilter4[Position3, MovementGoal, Movement, Enemy](game.world)
+}
+
+func (system *MovementSystem) Update(game *Game) {
+	deltaTime := rl.GetFrameTime()
+	query := system.filter.Query()
+	for query.Next() {
+		position, movementGoal, movement, _ := query.Get()
+
+		goalPosition := rl.NewVector3(
+			float32(movementGoal.nextGridX)+gridCellCenter,
+			position.Y,
+			float32(movementGoal.nextGridY)+gridCellCenter,
+		)
+
+		toGoal := rl.Vector3Subtract(goalPosition, *position)
+		distance := rl.Vector3Length(toGoal)
+		if distance <= 0 {
+			continue
+		}
+
+		maxStep := movement.speed * deltaTime
+		if maxStep >= distance {
+			*position = goalPosition
+			continue
+		}
+
+		direction := rl.Vector3Scale(rl.Vector3Normalize(toGoal), maxStep)
+		*position = rl.Vector3Add(*position, direction)
+	}
+	query.Close()
 }
 
 type EnemyGoalSetter struct {
