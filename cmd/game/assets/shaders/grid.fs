@@ -10,7 +10,7 @@ out vec4 finalColor;
 void main()
 {
     vec2 uv = fragTexCoord;
-    float lineWidth = 0.035;
+    float lineWidth = 0.015;
 
     float edgeX = 1.0 - step(lineWidth, uv.x) + step(1.0 - lineWidth, uv.x);
     float edgeY = 1.0 - step(lineWidth, uv.y) + step(1.0 - lineWidth, uv.y);
