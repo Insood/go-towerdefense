@@ -3,3 +3,4 @@
 *.exe~
 .gocache
 .gocache-local
+cmd/game/assets/models/src/*

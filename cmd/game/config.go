@@ -21,7 +21,7 @@ const (
 	gridLeftCol             = 0
 	gridRightCol            = gridWidth - 1
 	gridCellCenter          = float32(0.5)
-	spireY                  = groundPlaneY + 1.0
+	spireY                  = groundPlaneY
 	spawnerY                = groundPlaneY + 0.25
 	gridDistanceLabelY      = float32(0.0)
 	gridDistanceLabelSize   = int32(16)

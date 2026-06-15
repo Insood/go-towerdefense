@@ -77,8 +77,7 @@ func (game *Game) loadModels() {
 	cube.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = game.textures["base"]
 	game.models["cube"] = &cube
 
-	spire := rl.LoadModelFromMesh(rl.GenMeshCube(1, 2, 1))
-	spire.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = game.textures["base"]
+	spire := rl.LoadModel("./cmd/game/assets/models/spire.glb")
 	game.models["spire"] = &spire
 
 	spawner := rl.LoadModelFromMesh(rl.GenMeshCube(1, 0.5, 1))
