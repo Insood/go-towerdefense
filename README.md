@@ -9,3 +9,10 @@ The player defends a central target while enemies spawn at the map edges and mov
 Run the game with `go run ./cmd/game` or with `make game`
 
 For repository structure and gameplay rules, see [docs/architecture.md](docs/architecture.md).
+
+## TODO:
+* Create models for spires, spawners, and mobs
+* Implement a health system for enemies and for the tower
+* When enemies reach the tower, they explode and the tower loses health
+* Healthbar overlay for towers, spires, and enemies
+* Investigate particle systems to simulate explosions of the enemies
