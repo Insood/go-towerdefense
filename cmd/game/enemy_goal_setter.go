@@ -33,14 +33,20 @@ func (system *EnemyGoalSetter) Update(game *Game) {
 			continue
 		}
 
-		nextGridX, nextGridZ, ok := game.grid.NextLowerDistanceCell(movementGoal.nextGridX, movementGoal.nextGridZ)
-		if !ok || (nextGridX == gridCenterX && nextGridZ == gridCenterZ) {
+		candidates := game.grid.NextLowerDistanceCells(movementGoal.nextGridX, movementGoal.nextGridZ)
+		if len(candidates) == 0 {
 			entitiesToClear = append(entitiesToClear, query.Entity())
 			continue
 		}
 
-		movementGoal.nextGridX = nextGridX
-		movementGoal.nextGridZ = nextGridZ
+		next := candidates[rng.Intn(len(candidates))]
+		if next.X == gridCenterX && next.Z == gridCenterZ {
+			entitiesToClear = append(entitiesToClear, query.Entity())
+			continue
+		}
+
+		movementGoal.nextGridX = next.X
+		movementGoal.nextGridZ = next.Z
 	}
 
 	for _, entity := range entitiesToClear {

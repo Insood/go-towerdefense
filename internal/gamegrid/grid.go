@@ -106,15 +106,14 @@ func (grid *GameGrid) Distance(x, z int) int {
 	return cell.distance
 }
 
-func (grid *GameGrid) NextLowerDistanceCell(x, z int) (int, int, bool) {
+func (grid *GameGrid) NextLowerDistanceCells(x, z int) []GridCoord {
 	cell, ok := grid.Cell(x, z)
 	if !ok || cell.distance < 0 {
-		return 0, 0, false
+		return nil
 	}
 
 	bestDistance := cell.distance
-	bestX := x
-	bestZ := z
+	candidates := make([]GridCoord, 0, 4)
 
 	for _, delta := range [][2]int{{0, -1}, {0, 1}, {-1, 0}, {1, 0}} {
 		nextX := x + delta[0]
@@ -123,20 +122,19 @@ func (grid *GameGrid) NextLowerDistanceCell(x, z int) (int, int, bool) {
 		if !ok || nextCell.distance < 0 {
 			continue
 		}
-		if nextCell.distance >= bestDistance {
+		if nextCell.distance > bestDistance {
 			continue
 		}
 
-		bestDistance = nextCell.distance
-		bestX = nextX
-		bestZ = nextZ
+		if nextCell.distance < bestDistance {
+			bestDistance = nextCell.distance
+			candidates = candidates[:0]
+		}
+
+		candidates = append(candidates, GridCoord{X: nextX, Z: nextZ})
 	}
 
-	if bestDistance == cell.distance {
-		return 0, 0, false
-	}
-
-	return bestX, bestZ, true
+	return candidates
 }
 
 func (cell *GameGridCell) SetEntity(entity ecs.Entity) {

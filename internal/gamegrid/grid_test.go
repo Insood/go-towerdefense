@@ -52,17 +52,40 @@ func TestGameGridBFSRespectsOccupiedCells(t *testing.T) {
 func TestGameGridNextLowerDistanceCell(t *testing.T) {
 	grid := newTestGrid()
 
-	nextX, nextZ, ok := grid.NextLowerDistanceCell(testGridCenterX+2, testGridCenterZ)
-	if !ok {
-		t.Fatal("expected a next lower distance cell")
+	candidates := grid.NextLowerDistanceCells(testGridCenterX+2, testGridCenterZ)
+	if len(candidates) != 1 {
+		t.Fatalf("candidate count = %d, want 1", len(candidates))
 	}
-	if nextX != testGridCenterX+1 || nextZ != testGridCenterZ {
-		t.Fatalf("next lower cell = (%d, %d), want (%d, %d)", nextX, nextZ, testGridCenterX+1, testGridCenterZ)
+	if candidates[0].X != testGridCenterX+1 || candidates[0].Z != testGridCenterZ {
+		t.Fatalf("next lower cell = (%d, %d), want (%d, %d)", candidates[0].X, candidates[0].Z, testGridCenterX+1, testGridCenterZ)
 	}
 
 	occupyCell(t, &grid, testGridCenterX+1, testGridCenterZ)
-	if _, _, ok := grid.NextLowerDistanceCell(testGridCenterX+1, testGridCenterZ); ok {
-		t.Fatal("expected no next lower cell for an occupied/unreachable cell")
+	if candidates := grid.NextLowerDistanceCells(testGridCenterX+1, testGridCenterZ); len(candidates) != 0 {
+		t.Fatalf("expected no next lower cells for an occupied/unreachable cell, got %d", len(candidates))
+	}
+}
+
+func TestGameGridNextLowerDistanceCellsReturnsAllCandidates(t *testing.T) {
+	grid := newTestGrid()
+
+	candidates := grid.NextLowerDistanceCells(testGridCenterX+2, testGridCenterZ+1)
+	if len(candidates) != 2 {
+		t.Fatalf("candidate count = %d, want 2", len(candidates))
+	}
+
+	expected := map[GridCoord]bool{
+		{X: testGridCenterX + 1, Z: testGridCenterZ + 1}: true,
+		{X: testGridCenterX + 2, Z: testGridCenterZ}:     true,
+	}
+	for _, candidate := range candidates {
+		if !expected[candidate] {
+			t.Fatalf("unexpected candidate (%d, %d)", candidate.X, candidate.Z)
+		}
+		delete(expected, candidate)
+	}
+	if len(expected) != 0 {
+		t.Fatalf("missing candidates: %#v", expected)
 	}
 }
 
