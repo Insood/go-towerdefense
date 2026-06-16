@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"image/color"
+	"math"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -49,7 +51,11 @@ func InitializeGame() *Game {
 	game.AddSystem(&SpawnerSystem{})
 	game.AddSystem(&EnemyGoalSetter{})
 	game.AddSystem(&MovementSystem{})
+	game.AddSystem(&GravitySystem{})
+	game.AddSystem(&InertiaSystem{})
+	game.AddSystem(&ParticleSystem{})
 	game.AddSystem(&RenderSystem3D{})
+	game.AddSystem(&ParticleRenderSystem{})
 	game.AddSystem(&GridDistanceDebugRenderSystem{})
 	game.InitializeSystems()
 	game.placeModels()
@@ -76,6 +82,10 @@ func (game *Game) loadModels() {
 	cube := rl.LoadModelFromMesh(rl.GenMeshCube(1, 1, 1))
 	cube.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = game.textures["base"]
 	game.models["cube"] = &cube
+
+	whiteImage := rl.GenImageColor(1, 1, rl.White)
+	game.textures["white"] = rl.LoadTextureFromImage(whiteImage)
+	rl.UnloadImage(whiteImage)
 
 	spire := rl.LoadModel("./cmd/game/assets/models/spire.glb")
 	game.models["spire"] = &spire
@@ -123,6 +133,50 @@ func (game *Game) placeSpire() {
 
 	if !game.grid.ForcePlaceEntity(gridCenterX, gridCenterZ, spireY, spire, rl.White) {
 		panic("failed to place spire at the center of the grid")
+	}
+}
+
+func (game *Game) SpawnExplosion(position rl.Vector3, count int, startColor color.RGBA) {
+	if count <= 0 {
+		return
+	}
+
+	particleMapper := ecs.NewMap4[Position3, Velocity3, Particle, HasGravity](game.world)
+	for range count {
+		theta := float32(rng.Float64() * 2 * math.Pi)
+		phi := float32((rng.Float64() * 0.5) * math.Pi)
+		speed := explosionSpeedMin + float32(rng.Float64())*(explosionSpeedMax-explosionSpeedMin)
+		heightBoost := explosionHeightBoostMin + float32(rng.Float64())*(explosionHeightBoostMax-explosionHeightBoostMin)
+
+		direction := rl.NewVector3(
+			float32(math.Cos(float64(theta))*math.Sin(float64(phi))),
+			float32(math.Cos(float64(phi))),
+			float32(math.Sin(float64(theta))*math.Sin(float64(phi))),
+		)
+		velocity := rl.Vector3Scale(direction, speed)
+		velocity.Y += heightBoost
+		particleVelocity := Velocity3(velocity)
+
+		size := explosionSizeMin + float32(rng.Float64())*(explosionSizeMax-explosionSizeMin)
+		lifespan := explosionLifespanMin + float32(rng.Float64())*(explosionLifespanMax-explosionLifespanMin)
+		endColor := startColor
+		endColor.A = 0
+
+		particleMapper.NewEntity(
+			&Position3{X: position.X, Y: position.Y, Z: position.Z},
+			&particleVelocity,
+			&Particle{
+				age:          0,
+				lifespan:     lifespan,
+				startColor:   startColor,
+				endColor:     endColor,
+				startSize:    size,
+				endSize:      0,
+				currentColor: startColor,
+				currentSize:  size,
+			},
+			&HasGravity{},
+		)
 	}
 }
 

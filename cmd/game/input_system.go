@@ -16,10 +16,16 @@ func (system *InputSystem) Update(game *Game) {
 		debugShowGridDistances = !debugShowGridDistances
 	}
 
-	if !rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
-		return
+	if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
+		system.OnLeftClick(game)
 	}
 
+	if rl.IsMouseButtonPressed(rl.MouseButtonRight) {
+		system.OnRightClick(game)
+	}
+}
+
+func (system *InputSystem) OnLeftClick(game *Game) {
 	ray := rl.GetScreenToWorldRay(rl.GetMousePosition(), game.camera)
 	if point, ok := intersectRayGroundPlane(ray); ok {
 		gridX := int(math.Floor(float64(point.X)))
@@ -38,4 +44,15 @@ func (system *InputSystem) Update(game *Game) {
 	}
 
 	fmt.Println("click missed the ground plane")
+}
+
+func (system *InputSystem) OnRightClick(game *Game) {
+	ray := rl.GetScreenToWorldRay(rl.GetMousePosition(), game.camera)
+	if point, ok := intersectRayGroundPlane(ray); ok {
+		gridX := int(math.Floor(float64(point.X)))
+		gridZ := int(math.Floor(float64(point.Z)))
+		position := rl.NewVector3(float32(gridX)+1, 0.25, float32(gridZ)+0.5)
+		fmt.Println(position)
+		game.SpawnExplosion(position, 100, rl.Red)
+	}
 }

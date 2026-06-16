@@ -2,6 +2,7 @@ package main
 
 import (
 	"image/color"
+	"math"
 
 	gamegrid "go-towerdefense/internal/gamegrid"
 
@@ -18,6 +19,23 @@ func colorToVec4(c color.RGBA) [4]float32 {
 		float32(c.G) / 255,
 		float32(c.B) / 255,
 		float32(c.A) / 255,
+	}
+}
+
+func clampFloat32(value, min, max float32) float32 {
+	return float32(math.Max(float64(min), math.Min(float64(max), float64(value))))
+}
+
+func lerpFloat32(a, b, t float32) float32 {
+	return a + (b-a)*t
+}
+
+func lerpColorRGBA(a, b color.RGBA, t float32) color.RGBA {
+	return color.RGBA{
+		R: uint8(lerpFloat32(float32(a.R), float32(b.R), t)),
+		G: uint8(lerpFloat32(float32(a.G), float32(b.G), t)),
+		B: uint8(lerpFloat32(float32(a.B), float32(b.B), t)),
+		A: uint8(lerpFloat32(float32(a.A), float32(b.A), t)),
 	}
 }
 

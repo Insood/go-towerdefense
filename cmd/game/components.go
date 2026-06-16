@@ -34,3 +34,16 @@ type MovementGoal struct {
 }
 
 type Enemy struct{}
+
+type HasGravity struct{}
+
+type Particle struct {
+	age          float32
+	lifespan     float32
+	startColor   color.RGBA
+	endColor     color.RGBA
+	startSize    float32
+	endSize      float32
+	currentColor color.RGBA
+	currentSize  float32
+}

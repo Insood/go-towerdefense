@@ -35,7 +35,19 @@ const (
 	cameraMinZoom   = float32(3)
 	cameraMaxZoom   = float32(20)
 
-	enemySpeed = 0.5
+	enemySpeed          = 0.5
+	gravityAcceleration = float32(1.0)
+
+	explosionParticleCountMin = 8
+	explosionParticleCountMax = 14
+	explosionSpeedMin         = float32(1.5)
+	explosionSpeedMax         = float32(3.5)
+	explosionHeightBoostMin   = float32(0.5)
+	explosionHeightBoostMax   = float32(2.0)
+	explosionSizeMin          = float32(0.08)
+	explosionSizeMax          = float32(0.20)
+	explosionLifespanMin      = float32(0.35)
+	explosionLifespanMax      = float32(0.85)
 )
 
 var (
