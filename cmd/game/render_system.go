@@ -15,16 +15,8 @@ func (system *RenderSystem3D) Initialize(game *Game) {
 
 func (system *RenderSystem3D) Update(game *Game) {
 	rl.BeginMode3D(game.camera)
-	system.drawCoordinateSystem()
 	system.renderModels()
 	rl.EndMode3D()
-}
-
-func (system *RenderSystem3D) drawCoordinateSystem() {
-	origin := rl.Vector3Zero()
-	rl.DrawLine3D(origin, rl.NewVector3(axisLength, 0, 0), rl.Red)
-	rl.DrawLine3D(origin, rl.NewVector3(0, axisLength, 0), rl.Green)
-	rl.DrawLine3D(origin, rl.NewVector3(0, 0, axisLength), rl.Blue)
 }
 
 func (system *RenderSystem3D) renderModels() {
