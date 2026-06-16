@@ -56,7 +56,7 @@ func InitializeGame() *Game {
 	game.AddSystem(&ParticleSystem{})
 	game.AddSystem(&RenderSystem3D{})
 	game.AddSystem(&ParticleRenderSystem{})
-	game.AddSystem(&GridDistanceDebugRenderSystem{})
+	game.AddSystem(&DebugRenderSystem{})
 	game.InitializeSystems()
 	game.placeModels()
 

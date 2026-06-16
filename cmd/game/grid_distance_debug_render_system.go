@@ -6,14 +6,16 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-type GridDistanceDebugRenderSystem struct{}
+type DebugRenderSystem struct{}
 
-func (system *GridDistanceDebugRenderSystem) Initialize(game *Game) {}
+func (system *DebugRenderSystem) Initialize(game *Game) {}
 
-func (system *GridDistanceDebugRenderSystem) Update(game *Game) {
+func (system *DebugRenderSystem) Update(game *Game) {
 	if !debugShowGridDistances {
 		return
 	}
+
+	rl.DrawFPS(10, 10)
 
 	for z := 0; z < game.grid.Length; z++ {
 		for x := 0; x < game.grid.Width; x++ {
