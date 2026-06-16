@@ -53,6 +53,6 @@ func (system *RenderSystem3D) renderModels() {
 			drawTint = rl.White
 		}
 
-		rl.DrawModel(*renderable.model, *position, renderable.scale, drawTint)
+		rl.DrawModel(*renderable.model, rl.Vector3(*position), renderable.scale, drawTint)
 	}
 }

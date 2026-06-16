@@ -29,7 +29,7 @@ func (system *EnemyGoalSetter) Update(game *Game) {
 			position.Y,
 			float32(movementGoal.nextGridZ)+gridCellCenter,
 		)
-		if rl.Vector3Distance(*position, goalPosition) > enemyGoalDelta {
+		if rl.Vector3Distance(rl.Vector3(*position), goalPosition) > enemyGoalDelta {
 			continue
 		}
 

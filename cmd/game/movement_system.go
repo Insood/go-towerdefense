@@ -27,7 +27,7 @@ func (system *MovementSystem) Update(game *Game) {
 			float32(movementGoal.nextGridZ)+gridCellCenter,
 		)
 
-		toGoal := rl.Vector3Subtract(goalPosition, *position)
+		toGoal := rl.Vector3Subtract(goalPosition, rl.Vector3(*position))
 		distance := rl.Vector3Length(toGoal)
 		if distance <= 0 {
 			continue
@@ -35,11 +35,11 @@ func (system *MovementSystem) Update(game *Game) {
 
 		maxStep := movement.speed * deltaTime
 		if maxStep >= distance {
-			*position = goalPosition
+			*position = Position3(goalPosition)
 			continue
 		}
 
 		direction := rl.Vector3Scale(rl.Vector3Normalize(toGoal), maxStep)
-		*position = rl.Vector3Add(*position, direction)
+		*position = Position3(rl.Vector3Add(rl.Vector3(*position), direction))
 	}
 }
