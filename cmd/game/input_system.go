@@ -51,7 +51,7 @@ func (system *InputSystem) OnRightClick(game *Game) {
 	if point, ok := intersectRayGroundPlane(ray); ok {
 		gridX := int(math.Floor(float64(point.X)))
 		gridZ := int(math.Floor(float64(point.Z)))
-		position := rl.NewVector3(float32(gridX)+1, 0.25, float32(gridZ)+0.5)
+		position := Position3{X: float32(gridX) + 1, Y: 0.25, Z: float32(gridZ) + 0.5}
 		fmt.Println(position)
 		game.SpawnExplosion(position, 100, rl.Red)
 	}

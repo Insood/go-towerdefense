@@ -16,6 +16,7 @@ import (
 type Game struct {
 	models   map[string]*rl.Model
 	textures map[string]rl.Texture2D
+	sounds   map[string]rl.Sound
 	camera   rl.Camera3D
 	shaders  map[string]rl.Shader
 	grid     GameGrid
@@ -36,6 +37,7 @@ func InitializeGame() *Game {
 	game := &Game{
 		models:   make(map[string]*rl.Model),
 		textures: make(map[string]rl.Texture2D),
+		sounds:   make(map[string]rl.Sound),
 		camera:   camera,
 		shaders:  make(map[string]rl.Shader),
 		grid:     NewGameGrid(gridWidth, gridLength),
@@ -44,12 +46,14 @@ func InitializeGame() *Game {
 	game.grid.Initialize(game.world)
 	game.loadShaders()
 	game.loadModels()
+	game.loadSounds()
 	game.placeSpire()
 	game.AddSystem(&CameraSystem{})
 	game.AddSystem(&HoverPreviewSystem{})
 	game.AddSystem(&InputSystem{})
 	game.AddSystem(&SpawnerSystem{})
 	game.AddSystem(&EnemyGoalSetter{})
+	game.AddSystem(&ReachedGoalSystem{})
 	game.AddSystem(&MovementSystem{})
 	game.AddSystem(&GravitySystem{})
 	game.AddSystem(&InertiaSystem{})
@@ -88,7 +92,7 @@ func (game *Game) loadModels() {
 	game.textures["white"] = rl.LoadTextureFromImage(whiteImage)
 	rl.UnloadImage(whiteImage)
 
-	spire := rl.LoadModel("./cmd/game/assets/models/spire.glb")
+	spire := rl.LoadModel("assets/models/spire.glb")
 	game.models["spire"] = &spire
 
 	spawner := rl.LoadModelFromMesh(rl.GenMeshCube(1, 0.5, 1))
@@ -102,6 +106,10 @@ func (game *Game) loadModels() {
 	miniMob := rl.LoadModelFromMesh(rl.GenMeshCube(0.25, 0.25, 0.25))
 	miniMob.GetMaterials()[0].GetMap(rl.MapDiffuse).Texture = game.textures["miniMob"]
 	game.models["miniMob"] = &miniMob
+}
+
+func (game *Game) loadSounds() {
+	game.sounds["pop"] = rl.LoadSound(gameAssetPath("assets", "sounds", "pop.wav"))
 }
 
 func (game *Game) placeModels() {
@@ -137,7 +145,7 @@ func (game *Game) placeSpire() {
 	}
 }
 
-func (game *Game) SpawnExplosion(position rl.Vector3, count int, startColor color.RGBA) {
+func (game *Game) SpawnExplosion(position Position3, count int, startColor color.RGBA) {
 	if count <= 0 {
 		return
 	}
@@ -204,6 +212,9 @@ func (game *Game) UnloadAssets() {
 	}
 	for _, texture := range game.textures {
 		rl.UnloadTexture(texture)
+	}
+	for _, sound := range game.sounds {
+		rl.UnloadSound(sound)
 	}
 	for _, shader := range game.shaders {
 		rl.UnloadShader(shader)

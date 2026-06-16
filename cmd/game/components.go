@@ -37,6 +37,8 @@ type Enemy struct{}
 
 type HasGravity struct{}
 
+type ReachedGoal struct{}
+
 type Particle struct {
 	age          float32
 	lifespan     float32

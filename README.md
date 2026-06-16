@@ -15,4 +15,3 @@ For repository structure and gameplay rules, see [docs/architecture.md](docs/arc
 * Implement a health system for enemies and for the tower
 * When enemies reach the tower, they explode and the tower loses health
 * Healthbar overlay for towers, spires, and enemies
-* Investigate particle systems to simulate explosions of the enemies

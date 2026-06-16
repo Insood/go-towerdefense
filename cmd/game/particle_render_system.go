@@ -23,7 +23,7 @@ func (system *ParticleRenderSystem) renderParticles(game *Game) {
 	texture := game.textures["white"]
 	source := rl.NewRectangle(0, 0, 1, 1)
 	up := rl.NewVector3(0, 1, 0)
-	origin := rl.NewVector2(0.5, 0.5)
+	origin := rl.NewVector2(0, 0)
 
 	query := system.filter.Query()
 	defer query.Close()

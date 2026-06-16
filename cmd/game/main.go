@@ -12,6 +12,8 @@ var rng = rand.New(rand.NewSource(time.Now().UnixNano()))
 func main() {
 	rl.InitWindow(windowWidth, windowHeight, windowTitle)
 	defer rl.CloseWindow()
+	rl.InitAudioDevice()
+	defer rl.CloseAudioDevice()
 
 	game := InitializeGame()
 	defer game.UnloadAssets()
