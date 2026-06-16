@@ -13,7 +13,7 @@ func (system *InputSystem) Initialize(game *Game) {}
 
 func (system *InputSystem) Update(game *Game) {
 	if rl.IsKeyPressed(rl.KeyF11) {
-		debugShowGridDistances = !debugShowGridDistances
+		debugEnabled = !debugEnabled
 	}
 
 	if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {

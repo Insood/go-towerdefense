@@ -51,7 +51,7 @@ const (
 )
 
 var (
-	debugShowGridDistances = false
+	debugEnabled = false
 
 	cameraPosition    = rl.NewVector3(gridWidth/2.0, 12, gridLength*2/3+8)
 	cameraTarget      = rl.NewVector3(gridWidth/2.0, 0, gridLength*2/3)
