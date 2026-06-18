@@ -20,7 +20,7 @@ func (system *ParticleRenderSystem) Update(game *Game) {
 }
 
 func (system *ParticleRenderSystem) renderParticles(game *Game) {
-	texture := game.textures["white"]
+	texture := game.assets.Texture("white")
 	source := rl.NewRectangle(0, 0, 1, 1)
 	up := rl.NewVector3(0, 1, 0)
 	origin := rl.NewVector2(0, 0)

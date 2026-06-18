@@ -30,7 +30,7 @@ func (system *HoverPreviewSystem) Update(game *Game) {
 		preview.gridX = int(math.Floor(float64(point.X)))
 		preview.gridZ = int(math.Floor(float64(point.Z)))
 		position.X = float32(preview.gridX) + gridCellCenter
-		position.Y = groundPlaneY + 0.5
+		position.Y = groundPlaneY
 		position.Z = float32(preview.gridZ) + gridCellCenter
 
 		cell, ok := game.grid.Cell(preview.gridX, preview.gridZ)
@@ -42,7 +42,7 @@ func (system *HoverPreviewSystem) Update(game *Game) {
 				system.renderableMap.Add(
 					system.previewEntity,
 					&Renderable{
-						model:             game.models["cube"],
+						model:             game.assets.Model("turret"),
 						scale:             1.0,
 						tint:              hoverPreviewTint,
 						shaderTintEnabled: false,

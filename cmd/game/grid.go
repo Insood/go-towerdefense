@@ -34,7 +34,7 @@ func (grid *GameGrid) Initialize(world *ecs.World) {
 }
 
 func (grid *GameGrid) PlaceEntity(x, z int, model *rl.Model, tint color.RGBA) bool {
-	return grid.placeEntity(x, z, groundPlaneY+0.5, model, tint, false)
+	return grid.placeEntity(x, z, groundPlaneY, model, tint, false)
 }
 
 func (grid *GameGrid) ForcePlaceEntity(x, z int, y float32, model *rl.Model, tint color.RGBA) bool {

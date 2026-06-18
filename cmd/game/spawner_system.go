@@ -15,7 +15,7 @@ func (system *SpawnerSystem) Initialize(game *Game) {
 	system.spawnerMapper = ecs.NewMap3[Position3, Renderable, Spawner](game.world)
 	system.spawnerFilter = ecs.NewFilter2[Position3, Spawner](game.world)
 	system.enemyMapper = ecs.NewMap5[Position3, Renderable, Enemy, MovementGoal, Movement](game.world)
-	spawnerModel := game.models["spawner"]
+	spawnerModel := game.assets.Model("spawner")
 	for _, position := range spawnerGridPositions() {
 		system.spawnerMapper.NewEntity(
 			&Position3{
@@ -59,7 +59,7 @@ func (system *SpawnerSystem) Update(game *Game) {
 				Z: spawnPosition.Z,
 			},
 			&Renderable{
-				model:             game.models["miniMob"],
+				model:             game.assets.Model("miniMob"),
 				scale:             1.0,
 				tint:              rl.White,
 				shaderTintEnabled: false,

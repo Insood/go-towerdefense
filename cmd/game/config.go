@@ -23,7 +23,7 @@ const (
 	gridCellCenter  = float32(0.5)
 
 	spireY   = groundPlaneY
-	spawnerY = groundPlaneY + 0.25
+	spawnerY = groundPlaneY
 
 	gridDistanceLabelY      = float32(0.0)
 	gridDistanceLabelSize   = int32(16)
@@ -63,7 +63,7 @@ var (
 	cameraUp          = rl.NewVector3(0, 1, 0)
 	cameraFOVY        = float32(45)
 	baseCubePosition  = rl.Vector3Zero()
-	baseCubeColor     = rl.NewColor(198, 120, 76, 255)
+	baseTurretTint    = rl.RayWhite
 	buildableGridTint = rl.NewColor(230, 230, 230, 255)
 	noBuildGridTint   = rl.NewColor(140, 80, 80, 255)
 	hoverPreviewTint  = rl.NewColor(70, 140, 255, 120)

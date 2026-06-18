@@ -35,6 +35,6 @@ func (system *ReachedGoalSystem) Update(game *Game) {
 	for _, burst := range bursts {
 		game.world.RemoveEntity(burst.entity)
 		game.SpawnExplosion(burst.position, enemyReachedExplositionParticles, rl.Orange)
-		rl.PlaySound(game.sounds["pop"])
+		game.PlaySound("pop")
 	}
 }
