@@ -29,6 +29,13 @@ const (
 	gridDistanceLabelSize   = int32(16)
 	gridDistanceLabelOffset = int32(0)
 
+	healthBarWidth        = float32(42)
+	healthBarHeight       = float32(6)
+	healthBarBorderWidth  = float32(1)
+	healthBarWorldYOffset = float32(1.4)
+
+	enemyMaxHealth = float32(10)
+
 	enemySpeed                       = 0.5
 	enemyGoalDelta                   = float32(0.05)
 	enemyReachedGoalDelta            = float32(0.7)
@@ -58,15 +65,17 @@ const (
 var (
 	debugEnabled = false
 
-	cameraPosition    = rl.NewVector3(gridWidth/2.0, 12, gridLength*2/3+8)
-	cameraTarget      = rl.NewVector3(gridWidth/2.0, 0, gridLength*2/3)
-	cameraUp          = rl.NewVector3(0, 1, 0)
-	cameraFOVY        = float32(45)
-	baseCubePosition  = rl.Vector3Zero()
-	baseTurretTint    = rl.RayWhite
-	buildableGridTint = rl.NewColor(230, 230, 230, 255)
-	noBuildGridTint   = rl.NewColor(140, 80, 80, 255)
-	hoverPreviewTint  = rl.NewColor(70, 140, 255, 120)
+	cameraPosition      = rl.NewVector3(gridWidth/2.0, 12, gridLength*2/3+8)
+	cameraTarget        = rl.NewVector3(gridWidth/2.0, 0, gridLength*2/3)
+	cameraUp            = rl.NewVector3(0, 1, 0)
+	cameraFOVY          = float32(45)
+	baseCubePosition    = rl.Vector3Zero()
+	baseTurretTint      = rl.RayWhite
+	buildableGridTint   = rl.NewColor(230, 230, 230, 255)
+	noBuildGridTint     = rl.NewColor(140, 80, 80, 255)
+	hoverPreviewTint    = rl.NewColor(70, 140, 255, 120)
+	healthBarBackTint   = rl.NewColor(20, 20, 20, 210)
+	healthBarBorderTint = rl.NewColor(10, 10, 10, 255)
 
 	bgColor = rl.LightGray
 )

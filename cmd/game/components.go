@@ -35,6 +35,11 @@ type MovementGoal struct {
 
 type Enemy struct{}
 
+type Health struct {
+	current float32
+	max     float32
+}
+
 type HasGravity struct{}
 
 type ReachedGoal struct{}
