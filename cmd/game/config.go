@@ -34,6 +34,7 @@ const (
 	healthBarBorderWidth  = float32(1)
 	healthBarWorldYOffset = float32(1.4)
 
+	spireMaxHealth = float32(20)
 	enemyMaxHealth = float32(10)
 
 	enemySpeed                       = 0.5

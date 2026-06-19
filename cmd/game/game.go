@@ -85,7 +85,26 @@ func (game *Game) placeModels() {
 func (game *Game) placeSpire() {
 	spire := game.assets.Model("spire")
 
-	if !game.grid.ForcePlaceEntity(gridCenterX, gridCenterZ, spireY, spire, rl.White) {
+	spireMapper := ecs.NewMap3[Position3, Renderable, Health](game.world)
+	spireEntity := spireMapper.NewEntity(
+		&Position3{
+			X: float32(gridCenterX) + gridCellCenter,
+			Y: spireY,
+			Z: float32(gridCenterZ) + gridCellCenter,
+		},
+		&Renderable{
+			model:             spire,
+			scale:             1.0,
+			tint:              rl.White,
+			shaderTintEnabled: false,
+		},
+		&Health{
+			current: spireMaxHealth,
+			max:     spireMaxHealth,
+		},
+	)
+
+	if !game.grid.SetCellEntityForce(gridCenterX, gridCenterZ, spireEntity) {
 		panic("failed to place spire at the center of the grid")
 	}
 }
