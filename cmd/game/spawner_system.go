@@ -8,13 +8,13 @@ import (
 type SpawnerSystem struct {
 	spawnerMapper *ecs.Map3[Position3, Renderable, Spawner]
 	spawnerFilter *ecs.Filter2[Position3, Spawner]
-	enemyMapper   *ecs.Map6[Position3, Renderable, Enemy, MovementGoal, HasMovement, Health]
+	enemyMapper   *ecs.Map7[Position3, Renderable, Enemy, WaypointPath, MoveSpeed, Velocity3, Health]
 }
 
 func (system *SpawnerSystem) Initialize(game *Game) {
 	system.spawnerMapper = ecs.NewMap3[Position3, Renderable, Spawner](game.world)
 	system.spawnerFilter = ecs.NewFilter2[Position3, Spawner](game.world)
-	system.enemyMapper = ecs.NewMap6[Position3, Renderable, Enemy, MovementGoal, HasMovement, Health](game.world)
+	system.enemyMapper = ecs.NewMap7[Position3, Renderable, Enemy, WaypointPath, MoveSpeed, Velocity3, Health](game.world)
 	spawnerModel := game.assets.Model("spawner")
 	for _, position := range spawnerGridPositions() {
 		system.spawnerMapper.NewEntity(
@@ -51,6 +51,7 @@ func (system *SpawnerSystem) Update(game *Game) {
 	for _, spawnPosition := range spawnPositions {
 		gridX := int(spawnPosition.X)
 		gridZ := int(spawnPosition.Z)
+		path := buildWaypointPath(game.grid.PathToCenter(gridX, gridZ))
 
 		system.enemyMapper.NewEntity(
 			&Position3{
@@ -65,13 +66,14 @@ func (system *SpawnerSystem) Update(game *Game) {
 				shaderTintEnabled: false,
 			},
 			&Enemy{},
-			&MovementGoal{
-				nextGridX: gridX,
-				nextGridZ: gridZ,
+			&WaypointPath{
+				waypoints: path,
+				index:     0,
 			},
-			&HasMovement{
-				speed: float32(enemySpeed),
+			&MoveSpeed{
+				value: enemyMoveSpeed,
 			},
+			&Velocity3{},
 			&Health{
 				current: enemyMaxHealth,
 				max:     enemyMaxHealth,

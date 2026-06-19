@@ -24,20 +24,20 @@ type HoverPreview struct {
 	gridZ int
 }
 
-type HasMovement struct {
-	speed float32
-}
-
-type MovementGoal struct {
-	nextGridX int
-	nextGridZ int
-}
-
 type Enemy struct{}
 
 type Health struct {
 	current float32
 	max     float32
+}
+
+type WaypointPath struct {
+	waypoints []rl.Vector3
+	index     int
+}
+
+type MoveSpeed struct {
+	value float32
 }
 
 type HasGravity struct{}

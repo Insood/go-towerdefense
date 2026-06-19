@@ -137,6 +137,35 @@ func (grid *GameGrid) NextLowerDistanceCells(x, z int) []GridCoord {
 	return candidates
 }
 
+func (grid *GameGrid) PathToCenter(x, z int) []GridCoord {
+	cell, ok := grid.Cell(x, z)
+	if !ok || cell.distance < 0 {
+		return nil
+	}
+
+	path := make([]GridCoord, 0, cell.distance+1)
+	path = append(path, GridCoord{X: x, Z: z})
+	currentX, currentZ := x, z
+
+	for {
+		candidates := grid.NextLowerDistanceCells(currentX, currentZ)
+		if len(candidates) == 0 {
+			break
+		}
+
+		next := candidates[0]
+		path = append(path, next)
+		if next.X == grid.center.X && next.Z == grid.center.Z {
+			break
+		}
+
+		currentX = next.X
+		currentZ = next.Z
+	}
+
+	return path
+}
+
 func (cell *GameGridCell) SetEntity(entity ecs.Entity) {
 	cell.entity = entity
 	cell.occupied = true

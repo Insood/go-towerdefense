@@ -19,7 +19,7 @@ The game loop is intentionally simple:
 1. Input system processes mouse and keyboard state.
 2. Camera system updates the camera.
 3. Hover preview system updates the hovered grid cell.
-4. Gameplay systems update spawning, goal selection, and movement.
+4. Gameplay systems update spawning, waypoint selection, and movement.
 5. Render system draws the 3D scene.
 6. Debug systems draw overlays after the world is rendered.
 
@@ -32,12 +32,14 @@ The game loop is intentionally simple:
 - Spawners are placed on the edge-center cells.
 - Border cells are no-build cells.
 - Occupied cells block BFS pathing.
+- Enemies store precomputed waypoint paths that follow BFS distances toward the center.
+- Tower placement can trigger enemy path recomputation, but only after placement is accepted.
 
 ## Editing Guidance
 
 - If a change affects pathing or buildability, update `internal/gamegrid` first.
 - If a change affects render order, update the system list in `cmd/game/game.go`.
 - If a change affects an asset lifecycle, update `Game.UnloadAssets()`.
+- If a change affects enemy path follow logic, update the waypoint system and enemy path rebuild helpers together.
 - If a change affects shared math or color conversion, prefer `cmd/game/utils.go`.
 - Prefer one responsibility per system file.
-

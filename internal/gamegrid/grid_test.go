@@ -89,6 +89,37 @@ func TestGameGridNextLowerDistanceCellsReturnsAllCandidates(t *testing.T) {
 	}
 }
 
+func TestGameGridPathToCenterReturnsRouteToCenter(t *testing.T) {
+	grid := newTestGrid()
+
+	path := grid.PathToCenter(testGridCenterX, 0)
+	if len(path) == 0 {
+		t.Fatal("expected a path to center")
+	}
+
+	first := path[0]
+	if first.X != testGridCenterX || first.Z != 0 {
+		t.Fatalf("first path cell = (%d, %d), want start (%d, %d)", first.X, first.Z, testGridCenterX, 0)
+	}
+
+	last := path[len(path)-1]
+	if last.X != testGridCenterX || last.Z != testGridCenterZ {
+		t.Fatalf("last path cell = (%d, %d), want center (%d, %d)", last.X, last.Z, testGridCenterX, testGridCenterZ)
+	}
+
+	currentX, currentZ := testGridCenterX, 0
+	currentDistance := grid.Distance(currentX, currentZ)
+	for _, next := range path[1:] {
+		nextDistance := grid.Distance(next.X, next.Z)
+		if nextDistance >= currentDistance {
+			t.Fatalf("path distance did not decrease: got %d after %d", nextDistance, currentDistance)
+		}
+		currentDistance = nextDistance
+		currentX = next.X
+		currentZ = next.Z
+	}
+}
+
 func TestGameGridRejectsPlacementThatBlocksPathOrigins(t *testing.T) {
 	grid := newTestGrid()
 

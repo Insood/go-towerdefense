@@ -39,11 +39,10 @@ func InitializeGame() *Game {
 	game.AddSystem(&HoverPreviewSystem{})
 	game.AddSystem(&InputSystem{})
 	game.AddSystem(&SpawnerSystem{})
-	game.AddSystem(&EnemyGoalSetter{})
-	game.AddSystem(&ReachedGoalSystem{})
-	game.AddSystem(&MovementSystem{})
+	game.AddSystem(&WaypointSystem{})
 	game.AddSystem(&GravitySystem{})
 	game.AddSystem(&InertiaSystem{})
+	game.AddSystem(&ReachedGoalSystem{})
 	game.AddSystem(&ParticleSystem{})
 	game.AddSystem(&RenderSystem3D{})
 	game.AddSystem(&ParticleRenderSystem{})
@@ -106,6 +105,30 @@ func (game *Game) placeSpire() {
 
 	if !game.grid.SetCellEntityForce(gridCenterX, gridCenterZ, spireEntity) {
 		panic("failed to place spire at the center of the grid")
+	}
+}
+
+func (game *Game) PlaceTower(x, z int, model *rl.Model, tint color.RGBA) bool {
+	if !game.grid.PlaceEntity(x, z, model, tint) {
+		return false
+	}
+
+	game.RebuildEnemyPaths()
+	return true
+}
+
+func (game *Game) RebuildEnemyPaths() {
+	pathFilter := ecs.NewFilter4[Position3, WaypointPath, Velocity3, Enemy](game.world)
+	query := pathFilter.Query()
+	defer query.Close()
+
+	for query.Next() {
+		position, path, velocity, _ := query.Get()
+		gridCoord := gridCoordFromPosition(*position)
+		waypoints := buildWaypointPath(game.grid.PathToCenter(gridCoord.X, gridCoord.Z))
+		path.waypoints = waypoints
+		path.index = 0
+		*velocity = Velocity3{}
 	}
 }
 

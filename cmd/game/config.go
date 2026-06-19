@@ -35,11 +35,10 @@ const (
 	healthBarWorldYOffset = float32(1.4)
 
 	spireMaxHealth = float32(20)
-	enemyMaxHealth = float32(10)
 
-	enemySpeed                       = 0.5
-	enemyGoalDelta                   = float32(0.05)
-	enemyReachedGoalDelta            = float32(0.7)
+	enemyMaxHealth                   = float32(10)
+	enemyMoveSpeed                   = float32(0.5)
+	enemyWaypointDelta               = float32(0.05)
 	enemyReachedExplositionParticles = 100
 
 	axisLength = float32(4)

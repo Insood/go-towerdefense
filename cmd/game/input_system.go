@@ -39,7 +39,7 @@ func (system *InputSystem) OnLeftClick(game *Game) {
 			gridX,
 			gridZ,
 		)
-		game.grid.PlaceEntity(gridX, gridZ, game.assets.Model("turret"), baseTurretTint)
+		game.PlaceTower(gridX, gridZ, game.assets.Model("turret"), baseTurretTint)
 		return
 	}
 

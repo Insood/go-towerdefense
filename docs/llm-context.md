@@ -47,6 +47,7 @@ Use this as the default change map when adding a feature:
 | New asset loading or cleanup | `cmd/game/game.go`, especially `InitializeGame()` and `UnloadAssets()` |
 | Shared math or helper code | `cmd/game/utils.go` |
 | Grid/pathing changes | `internal/gamegrid/grid.go` and `internal/gamegrid/grid_test.go` |
+| Enemy waypoint changes | `cmd/game/waypoint_system.go`, `cmd/game/game.go`, `cmd/game/utils.go` |
 
 ## Implementation Pattern
 
@@ -65,7 +66,7 @@ The update order in `cmd/game/game.go` is intentional. If you change gameplay ti
 Common examples:
 
 - Input should run before gameplay reacts to it.
-- Goal selection and pathing should happen before movement.
+- Waypoint selection and pathing should happen before inertia moves entities.
 - Movement should happen before rendering.
 - Debug drawing should happen after the world is drawn.
 
@@ -84,4 +85,3 @@ If you are about to implement a new feature and are unsure where it belongs, che
 1. `internal/gamegrid` for rules about occupancy, pathing, and buildability.
 2. `cmd/game` for ECS data, systems, rendering, and assets.
 3. `docs/architecture.md` for update order and repo conventions.
-

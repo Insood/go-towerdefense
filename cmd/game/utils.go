@@ -64,3 +64,38 @@ func spawnerGridPositions() []gamegrid.GridCoord {
 		{X: gridRightCol, Z: gridCenterZ},
 	}
 }
+
+func gridCoordFromPosition(position Position3) gamegrid.GridCoord {
+	return gamegrid.GridCoord{
+		X: int(math.Floor(float64(position.X))),
+		Z: int(math.Floor(float64(position.Z))),
+	}
+}
+
+func worldPositionForGridCoord(coord gamegrid.GridCoord) rl.Vector3 {
+	return rl.NewVector3(float32(coord.X)+gridCellCenter, 0, float32(coord.Z)+gridCellCenter)
+}
+
+func buildWaypointPath(path []gamegrid.GridCoord) []rl.Vector3 {
+	if len(path) == 0 {
+		return nil
+	}
+
+	if len(path) == 1 {
+		return []rl.Vector3{worldPositionForGridCoord(path[0])}
+	}
+
+	waypoints := make([]rl.Vector3, 0, len(path)-1)
+	for i := 1; i < len(path)-1; i++ {
+		waypoints = append(waypoints, worldPositionForGridCoord(path[i]))
+	}
+
+	prev := worldPositionForGridCoord(path[len(path)-2])
+	center := worldPositionForGridCoord(path[len(path)-1])
+
+	// Go halfway to the center waypoint - which is the boundary at which
+	// the enemy is "done"
+	waypoints = append(waypoints, rl.Vector3Scale(rl.Vector3Add(prev, center), 0.5))
+
+	return waypoints
+}
