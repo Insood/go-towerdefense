@@ -6,11 +6,11 @@ import (
 )
 
 type MovementSystem struct {
-	filter *ecs.Filter4[Position3, MovementGoal, Movement, Enemy]
+	filter *ecs.Filter4[Position3, MovementGoal, HasMovement, Enemy]
 }
 
 func (system *MovementSystem) Initialize(game *Game) {
-	system.filter = ecs.NewFilter4[Position3, MovementGoal, Movement, Enemy](game.world)
+	system.filter = ecs.NewFilter4[Position3, MovementGoal, HasMovement, Enemy](game.world)
 }
 
 func (system *MovementSystem) Update(game *Game) {

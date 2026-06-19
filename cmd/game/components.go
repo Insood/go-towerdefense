@@ -24,7 +24,7 @@ type HoverPreview struct {
 	gridZ int
 }
 
-type Movement struct {
+type HasMovement struct {
 	speed float32
 }
 

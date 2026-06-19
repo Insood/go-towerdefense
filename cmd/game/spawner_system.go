@@ -8,13 +8,13 @@ import (
 type SpawnerSystem struct {
 	spawnerMapper *ecs.Map3[Position3, Renderable, Spawner]
 	spawnerFilter *ecs.Filter2[Position3, Spawner]
-	enemyMapper   *ecs.Map6[Position3, Renderable, Enemy, MovementGoal, Movement, Health]
+	enemyMapper   *ecs.Map6[Position3, Renderable, Enemy, MovementGoal, HasMovement, Health]
 }
 
 func (system *SpawnerSystem) Initialize(game *Game) {
 	system.spawnerMapper = ecs.NewMap3[Position3, Renderable, Spawner](game.world)
 	system.spawnerFilter = ecs.NewFilter2[Position3, Spawner](game.world)
-	system.enemyMapper = ecs.NewMap6[Position3, Renderable, Enemy, MovementGoal, Movement, Health](game.world)
+	system.enemyMapper = ecs.NewMap6[Position3, Renderable, Enemy, MovementGoal, HasMovement, Health](game.world)
 	spawnerModel := game.assets.Model("spawner")
 	for _, position := range spawnerGridPositions() {
 		system.spawnerMapper.NewEntity(
@@ -69,7 +69,7 @@ func (system *SpawnerSystem) Update(game *Game) {
 				nextGridX: gridX,
 				nextGridZ: gridZ,
 			},
-			&Movement{
+			&HasMovement{
 				speed: float32(enemySpeed),
 			},
 			&Health{
