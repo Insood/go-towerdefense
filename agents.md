@@ -14,6 +14,7 @@ For the higher-level layout and runtime flow, see [docs/architecture.md](docs/ar
 - Avoid adding dependencies unless they solve a real problem.
 - Preserve existing user changes unless explicitly asked to modify them.
 - If a change affects gameplay structure, explain the tradeoff briefly.
+- When you generate code, update or add tests for the behavior and update docs if the change affects gameplay rules, movement, pathing, rendering order, or system ownership.
 
 ## Change Placement
 

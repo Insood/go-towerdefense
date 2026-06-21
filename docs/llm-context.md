@@ -21,6 +21,13 @@ Read these files first:
 - One system should generally stay in one file under `cmd/game`.
 - Rendering changes belong in the render systems unless a separate pass is clearly needed.
 
+## When You Generate Code
+
+- Update or add tests for the behavior you changed.
+- Update the repo docs if the change affects gameplay rules, movement, pathing, rendering order, or system ownership.
+- Keep the docs aligned with the implementation, especially when the code is intentionally simple or uses a heuristic.
+- Prefer leaving a short explanation in the docs when the behavior might not be obvious from the code alone.
+
 ## Core Invariants
 
 - Grid width maps to `X`.
