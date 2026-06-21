@@ -76,26 +76,31 @@ func worldPositionForGridCoord(coord gamegrid.GridCoord) rl.Vector3 {
 	return rl.NewVector3(float32(coord.X)+gridCellCenter, 0, float32(coord.Z)+gridCellCenter)
 }
 
-func buildWaypointPath(path []gamegrid.GridCoord) []rl.Vector3 {
+func buildWaypointPathFromPosition(start rl.Vector3, path []gamegrid.GridCoord) ([]rl.Vector3, int) {
+	currentTileCenter := worldPositionForGridCoord(gridCoordFromPosition(Position3(start)))
+	waypoints := []rl.Vector3{currentTileCenter}
 	if len(path) == 0 {
-		return nil
+		return waypoints, 0
 	}
 
-	if len(path) == 1 {
-		return []rl.Vector3{worldPositionForGridCoord(path[0])}
+	if len(path) > 1 {
+		for i := 1; i < len(path)-1; i++ {
+			waypoints = append(waypoints, worldPositionForGridCoord(path[i]))
+		}
+
+		prev := worldPositionForGridCoord(path[len(path)-2])
+		center := worldPositionForGridCoord(path[len(path)-1])
+		waypoints = append(waypoints, rl.Vector3Scale(rl.Vector3Add(prev, center), 0.5))
 	}
 
-	waypoints := make([]rl.Vector3, 0, len(path)-1)
-	for i := 1; i < len(path)-1; i++ {
-		waypoints = append(waypoints, worldPositionForGridCoord(path[i]))
+	startIndex := 0
+	if len(waypoints) > 1 && manhattanDistance2D(start, waypoints[1]) < 1.0 {
+		startIndex = 1
 	}
 
-	prev := worldPositionForGridCoord(path[len(path)-2])
-	center := worldPositionForGridCoord(path[len(path)-1])
+	return waypoints, startIndex
+}
 
-	// Go halfway to the center waypoint - which is the boundary at which
-	// the enemy is "done"
-	waypoints = append(waypoints, rl.Vector3Scale(rl.Vector3Add(prev, center), 0.5))
-
-	return waypoints
+func manhattanDistance2D(a, b rl.Vector3) float32 {
+	return float32(math.Abs(float64(a.X-b.X)) + math.Abs(float64(a.Z-b.Z)))
 }

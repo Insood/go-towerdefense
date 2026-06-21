@@ -109,25 +109,46 @@ func (game *Game) placeSpire() {
 }
 
 func (game *Game) PlaceTower(x, z int, model *rl.Model, tint color.RGBA) bool {
+	if game.enemyOccupiesCell(x, z) {
+		return false
+	}
+
 	if !game.grid.PlaceEntity(x, z, model, tint) {
 		return false
 	}
 
-	game.RebuildEnemyPaths()
+	game.RepathEnemies()
 	return true
 }
 
-func (game *Game) RebuildEnemyPaths() {
+func (game *Game) enemyOccupiesCell(x, z int) bool {
+	enemyFilter := ecs.NewFilter2[Position3, Enemy](game.world)
+	query := enemyFilter.Query()
+	defer query.Close()
+
+	for query.Next() {
+		position, _ := query.Get()
+		cell := gridCoordFromPosition(*position)
+		if cell.X == x && cell.Z == z {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (game *Game) RepathEnemies() {
 	pathFilter := ecs.NewFilter4[Position3, WaypointPath, Velocity3, Enemy](game.world)
 	query := pathFilter.Query()
 	defer query.Close()
 
 	for query.Next() {
 		position, path, velocity, _ := query.Get()
-		gridCoord := gridCoordFromPosition(*position)
-		waypoints := buildWaypointPath(game.grid.PathToCenter(gridCoord.X, gridCoord.Z))
+		startGrid := gridCoordFromPosition(Position3(*position))
+		pathToCenter := game.grid.PathToCenter(startGrid.X, startGrid.Z)
+		waypoints, startIndex := buildWaypointPathFromPosition(rl.Vector3(*position), pathToCenter)
 		path.waypoints = waypoints
-		path.index = 0
+		path.index = startIndex
 		*velocity = Velocity3{}
 	}
 }

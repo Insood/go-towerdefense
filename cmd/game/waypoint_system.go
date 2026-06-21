@@ -24,6 +24,7 @@ func (system *WaypointSystem) Update(game *Game) {
 
 	for query.Next() {
 		position, path, moveSpeed, velocity, _ := query.Get()
+		// If nowhere to go, do not set a velocity
 		if len(path.waypoints) == 0 || path.index >= len(path.waypoints) {
 			*velocity = Velocity3{}
 			continue
@@ -34,32 +35,29 @@ func (system *WaypointSystem) Update(game *Game) {
 		toTarget := rl.Vector3Subtract(target, from)
 		distance := rl.Vector3Length(toTarget)
 
-		// Are we near the next waypoint
+		// Are we near the next waypoint?
 		if distance <= enemyWaypointDelta {
-
-			path.index++ // Yes, set the next waypoint
-
-			// Are we at the last waypoint?
-			// If so, remove set the ReachedGoal component
+			// Yes, set the next waypoint
+			path.index++
 			if path.index >= len(path.waypoints) {
+				// If so, remove set the ReachedGoal component
 				*velocity = Velocity3{}
 				entitiesToTransition = append(entitiesToTransition, query.Entity())
 				continue
 			}
 
-			// Calculate the distance to the next target
 			target = path.waypoints[path.index]
 			toTarget = rl.Vector3Subtract(target, from)
 			distance = rl.Vector3Length(toTarget)
 		}
 
-		// Prevent oscilation around the endpoint; if we would overstep the waypoint
-		// clamp the velocity so that we hit it exactly
 		speed := moveSpeed.value
 		if maxStep := speed * deltaTime; maxStep > distance {
 			speed = distance / deltaTime
 		}
 
+		// Prevent oscilation around the endpoint; if we would overstep the waypoint
+		// clamp the velocity so that we hit it exactly
 		*velocity = Velocity3(rl.Vector3Scale(rl.Vector3Normalize(toTarget), speed))
 	}
 
