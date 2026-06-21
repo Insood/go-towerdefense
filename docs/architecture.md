@@ -39,6 +39,7 @@ The game loop is intentionally simple:
   - the path then follows BFS toward the center
   - the final waypoint lands on the edge of the center approach instead of the exact center
   - when a tower is placed, enemies are repathed from their current tile rather than from a global route state
+  - each enemy keeps a waypoint index for the active target and a `distanceToGoal` value for the remaining route length
 
 ## Editing Guidance
 

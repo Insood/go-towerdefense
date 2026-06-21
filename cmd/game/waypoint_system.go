@@ -27,6 +27,7 @@ func (system *WaypointSystem) Update(game *Game) {
 		// If nowhere to go, do not set a velocity
 		if len(path.waypoints) == 0 || path.index >= len(path.waypoints) {
 			*velocity = Velocity3{}
+			path.distanceToGoal = 0
 			continue
 		}
 
@@ -42,6 +43,7 @@ func (system *WaypointSystem) Update(game *Game) {
 			if path.index >= len(path.waypoints) {
 				// If so, remove set the ReachedGoal component
 				*velocity = Velocity3{}
+				path.distanceToGoal = 0
 				entitiesToTransition = append(entitiesToTransition, query.Entity())
 				continue
 			}
@@ -55,10 +57,12 @@ func (system *WaypointSystem) Update(game *Game) {
 		if maxStep := speed * deltaTime; maxStep > distance {
 			speed = distance / deltaTime
 		}
+		stepDistance := speed * deltaTime
 
 		// Prevent oscilation around the endpoint; if we would overstep the waypoint
 		// clamp the velocity so that we hit it exactly
 		*velocity = Velocity3(rl.Vector3Scale(rl.Vector3Normalize(toTarget), speed))
+		path.distanceToGoal = clampFloat32(path.distanceToGoal-stepDistance, 0, path.distanceToGoal)
 	}
 
 	for _, entity := range entitiesToTransition {

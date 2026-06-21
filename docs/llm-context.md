@@ -54,6 +54,7 @@ Enemy movement is intentionally simple and mostly driven by precomputed waypoint
 - `WaypointSystem` reads the current waypoint index and moves the entity toward that target.
 - When the entity gets close enough to the current target, the index advances.
 - The `MoveSpeed` component stores per-enemy speed so movement does not depend on a global constant.
+- `WaypointPath.distanceToGoal` stores the remaining distance along the current waypoint chain and is reduced as the enemy moves.
 - If the path is exhausted, the enemy transitions to `ReachedGoal`.
 
 ### Current implementation note
@@ -61,6 +62,7 @@ Enemy movement is intentionally simple and mostly driven by precomputed waypoint
 - The waypoint builder includes the center of the tile the entity currently occupies as the first waypoint.
 - It may skip that first waypoint if the entity is already close enough to the next waypoint, which keeps the motion from doubling back unnecessarily.
 - This is a visual rule, not a full navigation guarantee. If the motion still looks acceptable, prefer keeping the implementation simple.
+- `WaypointPath.index` is still worth keeping because it tells movement which waypoint is currently active; `distanceToGoal` is a separate remaining-distance metric, not a replacement for the active target pointer.
 
 ## Where To Make Changes
 

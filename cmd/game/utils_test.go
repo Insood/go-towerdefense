@@ -210,6 +210,37 @@ func TestBuildWaypointPathFromPositionRetainsTileCenterWhenFarFromSecondWaypoint
 	}
 }
 
+func TestWaypointPathDistanceToGoalFromStartingWaypoint(t *testing.T) {
+	start := rl.NewVector3(1.5, 0, 1.5)
+	waypoints := []rl.Vector3{
+		rl.NewVector3(1.5, 0, 1.5),
+		rl.NewVector3(1.5, 0, 2.5),
+		rl.NewVector3(1.5, 0, 3.0),
+	}
+
+	got := waypointPathDistanceToGoal(start, waypoints, 0)
+	assertFloat32ApproxEqual(t, got, 1.5)
+}
+
+func TestWaypointPathDistanceToGoalFromSkippedStartingWaypoint(t *testing.T) {
+	start := rl.NewVector3(1.6, 0, 1.5)
+	waypoints := []rl.Vector3{
+		rl.NewVector3(1.5, 0, 1.5),
+		rl.NewVector3(2.5, 0, 1.5),
+		rl.NewVector3(3.0, 0, 1.5),
+	}
+
+	got := waypointPathDistanceToGoal(start, waypoints, 1)
+	assertFloat32ApproxEqual(t, got, 1.4)
+}
+
+func TestWaypointPathDistanceToGoalReturnsZeroWhenIndexIsOutOfRange(t *testing.T) {
+	got := waypointPathDistanceToGoal(rl.NewVector3(1.5, 0, 1.5), nil, 0)
+	if got != 0 {
+		t.Fatalf("waypointPathDistanceToGoal = %v, want 0", got)
+	}
+}
+
 func TestManhattanDistance2D(t *testing.T) {
 	got := manhattanDistance2D(rl.NewVector3(1, 0, 2), rl.NewVector3(4, 0, -1))
 	if got != 6 {

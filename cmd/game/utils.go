@@ -101,6 +101,19 @@ func buildWaypointPathFromPosition(start rl.Vector3, path []gamegrid.GridCoord) 
 	return waypoints, startIndex
 }
 
+func waypointPathDistanceToGoal(start rl.Vector3, waypoints []rl.Vector3, startIndex int) float32 {
+	if startIndex < 0 || startIndex >= len(waypoints) {
+		return 0
+	}
+
+	distance := rl.Vector3Distance(start, waypoints[startIndex])
+	for i := startIndex; i < len(waypoints)-1; i++ {
+		distance += rl.Vector3Distance(waypoints[i], waypoints[i+1])
+	}
+
+	return distance
+}
+
 func manhattanDistance2D(a, b rl.Vector3) float32 {
 	return float32(math.Abs(float64(a.X-b.X)) + math.Abs(float64(a.Z-b.Z)))
 }

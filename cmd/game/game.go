@@ -149,6 +149,7 @@ func (game *Game) RepathEnemies() {
 		waypoints, startIndex := buildWaypointPathFromPosition(rl.Vector3(*position), pathToCenter)
 		path.waypoints = waypoints
 		path.index = startIndex
+		path.distanceToGoal = waypointPathDistanceToGoal(rl.Vector3(*position), waypoints, startIndex)
 		*velocity = Velocity3{}
 	}
 }

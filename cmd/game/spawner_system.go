@@ -52,6 +52,7 @@ func (system *SpawnerSystem) Update(game *Game) {
 		gridX := int(spawnPosition.X)
 		gridZ := int(spawnPosition.Z)
 		path, startIndex := buildWaypointPathFromPosition(rl.Vector3(spawnPosition), game.grid.PathToCenter(gridX, gridZ))
+		distanceToGoal := waypointPathDistanceToGoal(rl.Vector3(spawnPosition), path, startIndex)
 
 		system.enemyMapper.NewEntity(
 			&Position3{
@@ -67,8 +68,9 @@ func (system *SpawnerSystem) Update(game *Game) {
 			},
 			&Enemy{},
 			&WaypointPath{
-				waypoints: path,
-				index:     startIndex,
+				waypoints:      path,
+				index:          startIndex,
+				distanceToGoal: distanceToGoal,
 			},
 			&MoveSpeed{
 				value: enemyMoveSpeed,

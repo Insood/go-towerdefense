@@ -32,8 +32,9 @@ type Health struct {
 }
 
 type WaypointPath struct {
-	waypoints []rl.Vector3
-	index     int
+	waypoints      []rl.Vector3
+	index          int
+	distanceToGoal float32
 }
 
 type MoveSpeed struct {
