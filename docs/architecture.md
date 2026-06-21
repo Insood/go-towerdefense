@@ -34,6 +34,11 @@ The game loop is intentionally simple:
 - Occupied cells block BFS pathing.
 - Enemies store precomputed waypoint paths that follow BFS distances toward the center.
 - Tower placement can trigger enemy path recomputation, but only after placement is accepted.
+- Enemy waypoint paths are built to keep visible movement simple and readable:
+  - the path starts at the center of the tile the enemy currently occupies
+  - the path then follows BFS toward the center
+  - the final waypoint lands on the edge of the center approach instead of the exact center
+  - when a tower is placed, enemies are repathed from their current tile rather than from a global route state
 
 ## Editing Guidance
 

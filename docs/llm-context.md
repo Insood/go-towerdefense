@@ -32,6 +32,36 @@ Read these files first:
 - BFS pathing must respect occupied cells.
 - A placement must not block every path origin.
 
+## Current Enemy Movement Spec
+
+Enemy movement is intentionally simple and mostly driven by precomputed waypoints.
+
+### How waypoint paths are built
+
+- When an enemy spawns, we compute a BFS path from its spawn cell to the center.
+- When a tower is successfully placed, we repath every enemy using the updated grid.
+- Waypoints are built in world space from the enemy's current tile center followed by the BFS tile centers.
+- The last waypoint is not the exact center cell. It lands on the edge of the center approach so enemies stop short of the spire instead of entering the center cell.
+
+### Why the current shape exists
+
+- The current shape keeps movement readable and avoids visually obvious diagonal shortcuts.
+- The code favors a small, understandable implementation over a more general route system.
+- Repathing is done from the enemy's current tile so tower placement can update movement without needing persistent graph state on the entity.
+
+### How movement consumes waypoints
+
+- `WaypointSystem` reads the current waypoint index and moves the entity toward that target.
+- When the entity gets close enough to the current target, the index advances.
+- The `MoveSpeed` component stores per-enemy speed so movement does not depend on a global constant.
+- If the path is exhausted, the enemy transitions to `ReachedGoal`.
+
+### Current implementation note
+
+- The waypoint builder includes the center of the tile the entity currently occupies as the first waypoint.
+- It may skip that first waypoint if the entity is already close enough to the next waypoint, which keeps the motion from doubling back unnecessarily.
+- This is a visual rule, not a full navigation guarantee. If the motion still looks acceptable, prefer keeping the implementation simple.
+
 ## Where To Make Changes
 
 Use this as the default change map when adding a feature:
