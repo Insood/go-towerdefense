@@ -6,12 +6,12 @@ import (
 )
 
 type ParticleSystem struct {
-	filter  *ecs.Filter2[Position3, Particle]
+	filter  *ecs.Filter2[Particle, Renderable]
 	expired []ecs.Entity
 }
 
 func (system *ParticleSystem) Initialize(game *Game) {
-	system.filter = ecs.NewFilter2[Position3, Particle](game.world)
+	system.filter = ecs.NewFilter2[Particle, Renderable](game.world)
 	system.expired = system.expired[:0]
 }
 
@@ -23,12 +23,14 @@ func (system *ParticleSystem) Update(game *Game) {
 	system.expired = system.expired[:0]
 
 	for query.Next() {
-		_, particle := query.Get()
+		particle, renderable := query.Get()
 		particle.age += deltaTime
 
 		if particle.lifespan <= 0 {
 			particle.currentColor = particle.endColor
 			particle.currentSize = particle.endSize
+			renderable.scale = particle.currentSize
+			renderable.tint = particle.currentColor
 			system.expired = append(system.expired, query.Entity())
 			continue
 		}
@@ -36,6 +38,8 @@ func (system *ParticleSystem) Update(game *Game) {
 		t := clampFloat32(particle.age/particle.lifespan, 0, 1)
 		particle.currentColor = lerpColorRGBA(particle.startColor, particle.endColor, t)
 		particle.currentSize = lerpFloat32(particle.startSize, particle.endSize, t)
+		renderable.scale = particle.currentSize
+		renderable.tint = particle.currentColor
 
 		if particle.age >= particle.lifespan {
 			system.expired = append(system.expired, query.Entity())

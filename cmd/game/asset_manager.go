@@ -95,6 +95,9 @@ func (assets *AssetManager) loadModels() {
 	spawner := rl.LoadModel(gameAssetPath("assets", "models", "spawner.glb"))
 	assets.models["spawner"] = &spawner
 
+	particleCube := rl.LoadModelFromMesh(rl.GenMeshCube(1, 1, 1))
+	assets.models["particleCube"] = &particleCube
+
 	mobCheckeredImage := rl.GenImageChecked(2, 2, 1, 1, rl.Orange, rl.Purple)
 	assets.textures["miniMob"] = rl.LoadTextureFromImage(mobCheckeredImage)
 	rl.UnloadImage(mobCheckeredImage)

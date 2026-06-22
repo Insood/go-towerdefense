@@ -47,7 +47,6 @@ func InitializeGame() *Game {
 	game.AddSystem(&ReachedGoalSystem{})
 	game.AddSystem(&ParticleSystem{})
 	game.AddSystem(&RenderSystem3D{})
-	game.AddSystem(&ParticleRenderSystem{})
 	game.AddSystem(&HealthBarOverlaySystem{})
 	game.AddSystem(&DebugRender3DSystem{})
 	game.AddSystem(&DebugRenderOverlaySystem{})
@@ -175,7 +174,7 @@ func (game *Game) SpawnExplosion(position Position3, count int, startColor color
 		return
 	}
 
-	particleMapper := ecs.NewMap4[Position3, Velocity3, Particle, HasGravity](game.world)
+	particleMapper := ecs.NewMap5[Position3, Velocity3, Particle, HasGravity, Renderable](game.world)
 	for range count {
 		theta := float32(rng.Float64() * 2 * math.Pi)
 		phi := float32((rng.Float64() * 0.5) * math.Pi)
@@ -210,6 +209,12 @@ func (game *Game) SpawnExplosion(position Position3, count int, startColor color
 				currentSize:  size,
 			},
 			&HasGravity{},
+			&Renderable{
+				model:             game.assets.Model("particleCube"),
+				scale:             size,
+				tint:              startColor,
+				shaderTintEnabled: false,
+			},
 		)
 	}
 }
