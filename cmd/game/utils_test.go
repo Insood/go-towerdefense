@@ -125,6 +125,22 @@ func TestWorldPositionForGridCoord(t *testing.T) {
 	assertVector3Equal(t, got, want)
 }
 
+func TestHorizontalDistance(t *testing.T) {
+	got := horizontalDistance(rl.NewVector3(1, 0, 2), rl.NewVector3(4, 0, -1))
+	assertFloat32ApproxEqual(t, got, 4.2426405)
+}
+
+func TestPointInsideHitBox(t *testing.T) {
+	hitBox := HitBox{size: rl.NewVector3(2, 2, 2)}
+
+	if !pointInsideHitBox(rl.NewVector3(1.4, 1.4, 1.4), rl.NewVector3(1, 1, 1), hitBox) {
+		t.Fatal("pointInsideHitBox returned false for point inside the box")
+	}
+	if pointInsideHitBox(rl.NewVector3(2.1, 1, 1), rl.NewVector3(1, 1, 1), hitBox) {
+		t.Fatal("pointInsideHitBox returned true for point outside the box")
+	}
+}
+
 func TestBuildWaypointPathFromPositionReturnsStartWhenPathIsEmpty(t *testing.T) {
 	start := rl.NewVector3(2.5, 0, 4.5)
 

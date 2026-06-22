@@ -114,6 +114,19 @@ func waypointPathDistanceToGoal(start rl.Vector3, waypoints []rl.Vector3, startI
 	return distance
 }
 
+func horizontalDistance(a, b rl.Vector3) float32 {
+	dx := a.X - b.X
+	dz := a.Z - b.Z
+	return float32(math.Sqrt(float64(dx*dx + dz*dz)))
+}
+
+func pointInsideHitBox(point, center rl.Vector3, hitBox HitBox) bool {
+	halfSize := rl.Vector3Scale(hitBox.size, 0.5)
+	return math.Abs(float64(point.X-center.X)) <= float64(halfSize.X) &&
+		math.Abs(float64(point.Y-center.Y)) <= float64(halfSize.Y) &&
+		math.Abs(float64(point.Z-center.Z)) <= float64(halfSize.Z)
+}
+
 func manhattanDistance2D(a, b rl.Vector3) float32 {
 	return float32(math.Abs(float64(a.X-b.X)) + math.Abs(float64(a.Z-b.Z)))
 }
