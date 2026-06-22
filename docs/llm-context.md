@@ -71,6 +71,33 @@ Enemy movement is intentionally simple and mostly driven by precomputed waypoint
 - This is a visual rule, not a full navigation guarantee. If the motion still looks acceptable, prefer keeping the implementation simple.
 - `WaypointPath.index` is still worth keeping because it tells movement which waypoint is currently active; `distanceToGoal` is a separate remaining-distance metric, not a replacement for the active target pointer.
 
+## Current Gunner Tower Spec
+
+Gunner towers are the first ranged tower type in the game.
+
+### How they work
+
+- When a tower is placed, the placed entity gets a `GunnerTower` component.
+- `GunnerTowerSystem` counts down the tower's `fireCooldown`.
+- When the tower is ready to fire, it looks for enemy entities in range.
+- If multiple enemies are in range, it picks the one with the lowest `WaypointPath.distanceToGoal`.
+- When the tower fires, it spawns a projectile entity with tower damage, range, and speed.
+
+### How projectiles work
+
+- Projectiles are straight-moving entities that use `Velocity3` and `InertiaSystem`.
+- Gunner towers queue projectile data during tower iteration and spawn the projectile entities only after the tower query closes, so the locked ECS world is not mutated mid-iteration.
+- `ProjectileSystem` runs after inertia and checks projectile positions against enemy `HitBox` AABBs.
+- If a projectile enters an enemy hit box, the projectile is removed and the enemy takes damage.
+- If the enemy's health reaches zero, the enemy is removed and the usual explosion/sound effect is triggered.
+
+### Why this shape exists
+
+- Targeting uses `distanceToGoal` so towers naturally prefer enemies that are closer to the spire.
+- The projectile path stays simple and visually readable.
+- Enemy hit detection is kept as an AABB check so it stays easy to reason about and cheap to evaluate.
+- The implementation deliberately keeps tower logic and projectile collision logic in separate systems.
+
 ## Where To Make Changes
 
 Use this as the default change map when adding a feature:
@@ -87,6 +114,7 @@ Use this as the default change map when adding a feature:
 | Shared math or helper code | `cmd/game/utils.go` |
 | Grid/pathing changes | `internal/gamegrid/grid.go` and `internal/gamegrid/grid_test.go` |
 | Enemy waypoint changes | `cmd/game/waypoint_system.go`, `cmd/game/game.go`, `cmd/game/utils.go` |
+| Gunner tower or projectile changes | `cmd/game/gunner_tower_system.go`, `cmd/game/projectile_system.go`, `cmd/game/components.go` |
 
 ## Implementation Pattern
 

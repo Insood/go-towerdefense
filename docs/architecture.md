@@ -40,6 +40,13 @@ The game loop is intentionally simple:
   - the final waypoint lands on the edge of the center approach instead of the exact center
   - when a tower is placed, enemies are repathed from their current tile rather than from a global route state
   - each enemy keeps a waypoint index for the active target and a `distanceToGoal` value for the remaining route length
+- Gunner towers are a simple tower type:
+  - each placed tower receives a `GunnerTower` component
+  - the tower selects the enemy in range with the lowest `distanceToGoal`
+  - the tower spawns a fast projectile with tower damage, range, and speed
+  - projectile entities are queued during tower iteration and created after the query closes so the ECS world is not written while locked
+  - projectiles move via `InertiaSystem` and resolve hits in `ProjectileSystem`
+  - enemies carry a `HitBox` so projectile collisions can use an AABB test
 
 ## Editing Guidance
 
@@ -47,5 +54,6 @@ The game loop is intentionally simple:
 - If a change affects render order, update the system list in `cmd/game/game.go`.
 - If a change affects an asset lifecycle, update `Game.UnloadAssets()`.
 - If a change affects enemy path follow logic, update the waypoint system and enemy path rebuild helpers together.
+- If a change affects gunner targeting or projectile collision, update the gunner tower system, projectile system, and relevant components together.
 - If a change affects shared math or color conversion, prefer `cmd/game/utils.go`.
 - Prefer one responsibility per system file.

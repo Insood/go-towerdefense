@@ -40,8 +40,10 @@ func InitializeGame() *Game {
 	game.AddSystem(&InputSystem{})
 	game.AddSystem(&SpawnerSystem{})
 	game.AddSystem(&WaypointSystem{})
+	game.AddSystem(&GunnerTowerSystem{})
 	game.AddSystem(&GravitySystem{})
 	game.AddSystem(&InertiaSystem{})
+	game.AddSystem(&ProjectileSystem{})
 	game.AddSystem(&ReachedGoalSystem{})
 	game.AddSystem(&ParticleSystem{})
 	game.AddSystem(&RenderSystem3D{})
@@ -116,6 +118,20 @@ func (game *Game) PlaceTower(x, z int, model *rl.Model, tint color.RGBA) bool {
 	if !game.grid.PlaceEntity(x, z, model, tint) {
 		return false
 	}
+
+	entity, ok := game.grid.CellEntity(x, z)
+	if !ok {
+		panic("tower entity missing after placement")
+	}
+
+	gunnerTowerMapper := ecs.NewMap1[GunnerTower](game.world)
+	gunnerTowerMapper.Add(entity, &GunnerTower{
+		damage:       gunnerTowerDamage,
+		rangeRadius:  gunnerTowerRange,
+		speed:        gunnerTowerProjectileSpeed,
+		cooldown:     gunnerTowerCooldown,
+		fireCooldown: 0,
+	})
 
 	game.RepathEnemies()
 	return true

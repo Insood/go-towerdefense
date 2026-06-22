@@ -37,9 +37,16 @@ const (
 	spireMaxHealth = float32(20)
 
 	enemyMaxHealth                   = float32(10)
+	enemyHitBoxSize                  = float32(0.25)
 	enemyMoveSpeed                   = float32(0.5)
 	enemyWaypointDelta               = float32(0.05)
 	enemyReachedExplositionParticles = 100
+
+	gunnerTowerDamage          = float32(2)
+	gunnerTowerRange           = float32(2.5)
+	gunnerTowerProjectileSpeed = float32(12)
+	gunnerTowerCooldown        = float32(0.75)
+	gunnerTowerProjectileSize  = float32(0.15)
 
 	axisLength = float32(4)
 

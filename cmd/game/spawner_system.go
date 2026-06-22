@@ -8,13 +8,13 @@ import (
 type SpawnerSystem struct {
 	spawnerMapper *ecs.Map3[Position3, Renderable, Spawner]
 	spawnerFilter *ecs.Filter2[Position3, Spawner]
-	enemyMapper   *ecs.Map7[Position3, Renderable, Enemy, WaypointPath, MoveSpeed, Velocity3, Health]
+	enemyMapper   *ecs.Map8[Position3, Renderable, Enemy, WaypointPath, MoveSpeed, Velocity3, Health, HitBox]
 }
 
 func (system *SpawnerSystem) Initialize(game *Game) {
 	system.spawnerMapper = ecs.NewMap3[Position3, Renderable, Spawner](game.world)
 	system.spawnerFilter = ecs.NewFilter2[Position3, Spawner](game.world)
-	system.enemyMapper = ecs.NewMap7[Position3, Renderable, Enemy, WaypointPath, MoveSpeed, Velocity3, Health](game.world)
+	system.enemyMapper = ecs.NewMap8[Position3, Renderable, Enemy, WaypointPath, MoveSpeed, Velocity3, Health, HitBox](game.world)
 	spawnerModel := game.assets.Model("spawner")
 	for _, position := range spawnerGridPositions() {
 		system.spawnerMapper.NewEntity(
@@ -79,6 +79,9 @@ func (system *SpawnerSystem) Update(game *Game) {
 			&Health{
 				current: enemyMaxHealth,
 				max:     enemyMaxHealth,
+			},
+			&HitBox{
+				size: rl.NewVector3(enemyHitBoxSize, enemyHitBoxSize, enemyHitBoxSize),
 			},
 		)
 	}

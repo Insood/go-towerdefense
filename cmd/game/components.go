@@ -31,10 +31,27 @@ type Health struct {
 	max     float32
 }
 
+type HitBox struct {
+	size rl.Vector3
+}
+
 type WaypointPath struct {
 	waypoints      []rl.Vector3
 	index          int
 	distanceToGoal float32
+}
+
+type GunnerTower struct {
+	damage       float32
+	rangeRadius  float32
+	speed        float32
+	cooldown     float32
+	fireCooldown float32
+}
+
+type Projectile struct {
+	damage         float32
+	remainingRange float32
 }
 
 type MoveSpeed struct {
